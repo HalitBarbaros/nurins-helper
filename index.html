@@ -99,7 +99,6 @@
         .nav-btn.saved-tab.active { color: var(--gold); border-color: var(--gold); }
         .nav-btn.last24-tab.active { color: var(--green); border-color: var(--green); }
         .nav-btn.briefing-tab.active { color: #000; border-bottom: 4px double #000; }
-        .nav-btn.custom-tab.active { color: var(--accent); border-color: var(--accent); }
 
         /* PITCH BAR (Saved Tab Only) */
         #pitch-bar {
@@ -113,7 +112,6 @@
             font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--font-sans);
         }
         .pitch-btn:hover { background: #333; }
-        .pitch-btn.danger { background: #b91c1c; margin-top: 10px; }
 
         /* ADD FEED MODAL */
         #add-feed-container {
@@ -283,7 +281,6 @@
         <button class="nav-btn last24-tab" onclick="filterCategory('last24h', this)">🕒 Last 24h</button>
         <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 Trending</button>
         <button class="nav-btn active" onclick="filterCategory('all', this)">All Feeds</button>
-        <button class="nav-btn custom-tab" onclick="filterCategory('Custom', this)">My Sources</button>
         <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
         <button class="nav-btn" onclick="filterCategory('health', this)">Health</button>
         <button class="nav-btn" onclick="filterCategory('environment', this)">Nature</button>
@@ -306,7 +303,6 @@
     <input type="text" id="feed-name-input" placeholder="Source Name (e.g. My Blog)" style="width:100%; padding:8px; border:1px solid #ddd; margin-bottom:5px;">
     <input type="text" id="feed-url-input" placeholder="RSS URL (https://.../feed)" style="width:100%; padding:8px; border:1px solid #ddd; margin-bottom:10px;">
     <button class="pitch-btn" style="width:100%; justify-content:center;" onclick="addCustomFeed()">Add Source</button>
-    <button class="pitch-btn danger" style="width:100%; justify-content:center;" onclick="clearCustomFeeds()">⚠ Reset All My Sources</button>
 </div>
 
 <div id="news-container">
@@ -324,6 +320,10 @@
 
     // --- BASE SOURCES ---
     const defaultFeeds = [
+        // --- ADDED NEW SOURCES HERE ---
+        { category: "trending", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/top_news.xml" },
+        { category: "trending", name: "SciTechDaily", url: "https://scitechdaily.com/feed/" },
+        // ------------------------------
         { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
         { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
         { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
@@ -334,7 +334,7 @@
         { category: "space", name: "ESA", url: "https://www.esa.int/content/search/rss/feed/topic/1585" },
         { category: "space", name: "EarthSky", url: "https://earthsky.org/feed" },
         { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
-        { category: "health", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
+        { category: "health", name: "ScienceDaily (Health)", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
         { category: "health", name: "Stat News", url: "https://www.statnews.com/feed/" },
         { category: "health", name: "NIH Research", url: "https://www.nih.gov/news-events/feed.xml" },
         { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
@@ -354,25 +354,7 @@
     let allArticles = []; 
     let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
     let customFeeds = JSON.parse(localStorage.getItem('nurinsCustomFeeds')) || [];
-    
-    // DEDUPLICATE FEEDS: Combine Default + Custom, but prefer Custom if URL matches, prevent duplicates
-    let activeFeeds = [];
-    const seenUrls = new Set();
-    
-    // Add custom feeds first
-    customFeeds.forEach(feed => {
-        if(!seenUrls.has(feed.url)) {
-            activeFeeds.push(feed);
-            seenUrls.add(feed.url);
-        }
-    });
-    // Add default feeds if URL not seen
-    defaultFeeds.forEach(feed => {
-        if(!seenUrls.has(feed.url)) {
-            activeFeeds.push(feed);
-            seenUrls.add(feed.url);
-        }
-    });
+    let activeFeeds = [...defaultFeeds, ...customFeeds];
 
     let currentView = 'all'; 
     let isListView = false; 
@@ -393,6 +375,7 @@
         document.getElementById('modal-desc').innerText = article.desc; 
         
         document.getElementById('modal-link-btn').href = article.link;
+        // Make sure we pass a function reference, don't execute immediately
         document.getElementById('modal-save-btn').onclick = function() { toggleFavorite(article.link); showToast("Saved!"); };
         
         document.getElementById('modal-overlay').classList.add('open');
@@ -416,15 +399,6 @@
     function addCustomFeed() {
         const name = document.getElementById('feed-name-input').value;
         const url = document.getElementById('feed-url-input').value;
-        
-        if (!Array.isArray(customFeeds)) customFeeds = [];
-
-        // Check if URL already exists to prevent duplicates
-        if (customFeeds.some(f => f.url === url)) {
-            showToast("You already added this source!");
-            return;
-        }
-
         if(name && url) {
             const newFeed = { category: "Custom", name: name, url: url };
             customFeeds.push(newFeed);
@@ -435,13 +409,7 @@
         }
     }
 
-    function clearCustomFeeds() {
-        if(confirm("Are you sure you want to remove all your custom sources?")) {
-            localStorage.removeItem('nurinsCustomFeeds');
-            location.reload();
-        }
-    }
-
+    // Copy ALL saved stories
     function copyPitch() {
         if(favorites.length === 0) { showToast("No stories saved to pitch!"); return; }
         let text = "Here are potential stories for today:\n\n";
@@ -451,9 +419,11 @@
         navigator.clipboard.writeText(text).then(() => showToast("Full pitch list copied!"));
     }
 
+    // Copy SINGLE story in pitch format
     function copySinglePitch(link) {
         let article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
         if(!article) return;
+        
         const text = `${article.title} (${article.source}) - [Link: ${article.link}]`;
         navigator.clipboard.writeText(text).then(() => showToast("Pitch format copied!"));
     }
@@ -517,6 +487,7 @@
     }
 
     // --- ROBUST FETCH ENGINE ---
+    // Try primary proxy, if fail, try fallback
     async function fetchWithFallback(url) {
         const proxies = [
             `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`,
@@ -540,11 +511,7 @@
     async function fetchFeed(feed) {
         try {
             const str = await fetchWithFallback(feed.url);
-            if (!str) {
-                // If it's a custom feed and it failed, notify user once
-                if(feed.category === 'Custom') console.warn("Failed to load custom feed:", feed.name);
-                return [];
-            }
+            if (!str) return [];
 
             const data = new window.DOMParser().parseFromString(str, "text/xml");
             const items = Array.from(data.querySelectorAll("item, entry"));
@@ -584,12 +551,14 @@
         } catch (e) { return []; }
     }
 
+    // --- THE MISSING FUNCTION IS ADDED BELOW ---
     function showFavorites(btnElement) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         currentView = 'saved';
         renderGrid(favorites);
     }
+    // ------------------------------------------
 
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -622,20 +591,10 @@
         activeFeeds.forEach(feed => {
             fetchFeed(feed).then(items => {
                 if(items.length > 0) {
-                    // DEDUPLICATE ARTICLES: Only add if link doesn't exist in allArticles
-                    items.forEach(newItem => {
-                        if (!allArticles.some(existing => existing.link === newItem.link)) {
-                            allArticles.push(newItem);
-                        }
-                    });
-
+                    allArticles = allArticles.concat(items);
                     allArticles.sort((a,b) => b.time - a.time);
+                    // Debounce rendering slightly? No, immediate is snappier
                     renderGrid(getFilteredAndSearchedList());
-                } else {
-                    // If custom feed returns 0 items, warn user
-                    if (feed.category === 'Custom') {
-                        // showToast(`Source "${feed.name}" returned no recent stories.`);
-                    }
                 }
                 completed++;
                 progressBar.style.width = `${(completed/total)*100}%`;
@@ -662,6 +621,9 @@
         }
 
         if (articles.length === 0) {
+            // Don't show empty state if loading isn't finished? 
+            // Actually, with progressive loading, we might show empty briefly. 
+            // We can check if 'allArticles' has length.
             if(allArticles.length === 0) return; // Still loading first batch
             grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#999; margin-top:50px;">No stories found here.</div>`;
             return;
@@ -676,6 +638,7 @@
             
             card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
             
+            // Make entire card click to open modal
             card.onclick = function(e) {
                 if(e.target.closest('.action-group')) return;
                 openArticle(news.link);

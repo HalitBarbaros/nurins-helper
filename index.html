@@ -13,7 +13,7 @@
             --accent: #38bdf8;
             --viral: #f43f5e;
             --gold: #fbbf24;
-            --green: #10b981; /* New Action Color */
+            --green: #10b981;
             --nav-active: #2563eb;
         }
 
@@ -96,8 +96,8 @@
         #toast {
             visibility: hidden;
             min-width: 250px;
-            background-color: var(--green);
-            color: #fff;
+            background-color: var(--accent); /* Blue for links */
+            color: #000;
             text-align: center;
             border-radius: 4px;
             padding: 16px;
@@ -106,7 +106,7 @@
             left: 50%;
             bottom: 30px;
             transform: translateX(-50%);
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
@@ -182,11 +182,10 @@
             background: rgba(0,0,0,0.6);
             border: none;
             color: #ccc;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -197,10 +196,11 @@
         .icon-btn:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); color: #fff; }
         
         /* Star Specific */
+        .star-btn { font-size: 1.1rem; }
         .star-btn.is-saved { color: var(--gold); text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); }
         
-        /* Check Specific */
-        .check-btn:hover { color: var(--green); background: #fff; }
+        /* Copy Specific */
+        .copy-btn:hover { color: var(--accent); background: #fff; }
 
         .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
 
@@ -265,7 +265,7 @@
     <div id="news-grid"></div>
 </div>
 
-<div id="toast">Prompt copied! Paste into AI now.</div>
+<div id="toast">Link copied!</div>
 
 <script>
     // --- MASSIVE SOURCE LIST ---
@@ -322,46 +322,16 @@
         document.getElementById('clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
-    // --- PROMPT GENERATION LOGIC ---
-    function copyPrompt(link) {
-        const article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
-        if(!article) return;
-
-        // The precise prompt for the AI
-        const promptText = `
-I need you to help me generate a viral post for this article.
-
-SOURCE ARTICLE:
-Title: ${article.title}
-Link: ${article.link}
-Description: ${article.desc}
-
-REQUIREMENTS:
-1. 3 image overlay ideas.
-2. 3 punchy opening lines.
-3. An informative post (1500-1900 characters).
-
-STRICT CONSTRAINTS:
-- No bold. No italics.
-- Use spaces before and after dashes ( – ).
-- American spelling and grammar.
-- Imperial units first, Metric in parentheses.
-- Maintain MLA citations at the end.
-- Tone: Viral hook, narrative storytelling, reflective conclusion.
-- Style: Clear, accessible, not cheesy.
-- Text overlays should be short (8-12 words) and complete sentences.
-
-Please write it now.
-`;
-
-        // Copy to clipboard
-        navigator.clipboard.writeText(promptText).then(() => {
+    // --- COPY LINK LOGIC ---
+    function copyLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
             showToast();
         });
     }
 
     function showToast() {
         var x = document.getElementById("toast");
+        x.innerText = "Link copied to clipboard!";
         x.className = "show";
         setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
     }
@@ -469,11 +439,13 @@ Please write it now.
             let badgeColor = getCatColor(news.category);
             if(news.category === 'trending') badgeColor = '#f43f5e';
 
-            // IMPORTANT: The buttons are here
+            // SVG ICON FOR COPY
+            const copyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+
             card.innerHTML = `
                 <div class="card-image" style="${imgHtml}">
                     <div class="action-group">
-                        <button class="icon-btn check-btn" onclick="copyPrompt('${news.link}')" title="Generate Viral Post">✓</button>
+                        <button class="icon-btn copy-btn" onclick="copyLink('${news.link}')" title="Copy Link">${copyIcon}</button>
                         <button class="icon-btn star-btn ${savedClass}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
                     </div>
                     <div class="category-badge" style="background:${badgeColor}">${news.category}</div>

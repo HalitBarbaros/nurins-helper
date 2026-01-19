@@ -6,26 +6,31 @@
     <title>Nurin's Little Helper</title>
     <style>
         :root {
-            /* BEIGE AESTHETIC PALETTE */
+            /* NYT / BEIGE PALETTE */
             --bg-color: #fdfcf8;      /* Creamy White */
-            --header-bg: #f2ebe5;     /* Soft Beige */
+            --header-bg: #f7f5f2;     /* Very Light Beige */
             --card-bg: #ffffff;       /* Pure White */
-            --text-main: #3e3b39;     /* Warm Charcoal */
-            --text-muted: #8c8680;    /* Taupe */
+            --text-main: #121212;     /* Ink Black (sharper contrast like NYT) */
+            --text-muted: #666666;    /* Gray */
             
             --accent: #c0a080;        /* Latte / Sand */
-            --accent-hover: #a68a6d;  /* Darker Latte */
+            --accent-hover: #333333;  /* Black Hover */
             
-            --viral: #e07a5f;         /* Terracotta (Trending) */
-            --green: #81b29a;         /* Sage Green (Fresh/Action) */
-            --gold: #f2cc8f;          /* Soft Gold (Saved) */
+            --viral: #b91c1c;         /* Deep Red (Like Breaking News) */
+            --green: #047857;         /* Deep Green */
+            --gold: #d97706;          /* Deep Gold */
+            --purple: #7e22ce;        /* Deep Purple */
             
-            --border: #e6e0d8;
-            --shadow: rgba(62, 59, 57, 0.08);
+            --border: #e2e2e2;
+            --shadow: rgba(0, 0, 0, 0.06);
+            
+            /* TYPOGRAPHY */
+            --font-serif: "Cheltenham", "Georgia", "Times New Roman", serif; /* NYT Style */
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-sans);
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
@@ -41,7 +46,6 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .header-top {
@@ -54,160 +58,201 @@
         }
 
         .title-group h1 { 
-            margin: 0; 
-            font-size: 1.5rem; 
-            letter-spacing: -0.5px; 
-            color: #2c2926; 
-            font-weight: 800; 
-            font-family: "Georgia", serif; /* Editorial feel */
+            margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; 
+            color: #000; font-weight: 700; 
+            font-family: var(--font-serif); /* NYT FONT */
         }
-        .title-group span { font-family: sans-serif; font-size: 0.85rem; color: var(--text-muted); font-weight: normal; margin-left: 10px; }
+        .title-group span { font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); font-weight: normal; margin-left: 10px; }
 
         .tools-group { display: flex; gap: 10px; align-items: center; flex-grow: 1; justify-content: flex-end; }
 
         /* INPUTS & BUTTONS */
         #search-input {
-            background: #fff; border: 1px solid var(--border); color: var(--text-main); padding: 8px 18px;
-            border-radius: 30px; font-size: 0.9rem; width: 220px; outline: none; transition: all 0.2s;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            background: #fff; border: 1px solid #ccc; color: var(--text-main); padding: 8px 18px;
+            border-radius: 4px; font-size: 0.9rem; width: 220px; outline: none; transition: all 0.2s;
         }
-        #search-input:focus { border-color: var(--accent); width: 280px; box-shadow: 0 0 0 3px rgba(192, 160, 128, 0.2); }
+        #search-input:focus { border-color: #000; width: 280px; }
 
         .tool-btn {
-            background: #fff; border: 1px solid var(--border); color: var(--text-main); padding: 8px 14px;
-            border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+            background: #fff; border: 1px solid #ccc; color: var(--text-main); padding: 8px 14px;
+            border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
             transition: 0.2s; font-weight: 500;
         }
-        .tool-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-        /* KEYWORD CLOUD */
-        #keyword-cloud {
-            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05);
-            font-size: 0.8rem; align-items: center;
-        }
-        .cloud-label { font-weight: bold; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; margin-right: 5px; }
-        .keyword-tag {
-            background: #fff; padding: 3px 10px; border-radius: 12px; border: 1px solid var(--border);
-            cursor: pointer; color: var(--text-main); transition: 0.2s;
-        }
-        .keyword-tag:hover { border-color: var(--viral); color: var(--viral); transform: translateY(-1px); }
+        .tool-btn:hover { background: #000; color: #fff; border-color: #000; }
 
         /* NAV BAR */
-        .nav-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; margin-top: 15px; }
+        .nav-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;}
         .nav-bar::-webkit-scrollbar { display: none; }
 
         .nav-btn {
-            background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 6px 14px;
-            border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+            background: transparent; color: #666; border: none; padding: 6px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 700; 
+            transition: all 0.2s; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px;
+            font-family: var(--font-sans);
         }
-        .nav-btn:hover { background: #fff; color: var(--accent-hover); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .nav-btn.active { background: var(--text-main); color: #fff; }
+        .nav-btn:hover { color: #000; background: rgba(0,0,0,0.05); }
+        .nav-btn.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; }
         
-        .nav-btn.trending-tab.active { background: var(--viral); border-color: var(--viral); }
-        .nav-btn.saved-tab.active { background: var(--gold); border-color: var(--gold); color: #5c4d32; }
-        .nav-btn.last24-tab.active { background: var(--green); color: #fff; }
+        .nav-btn.trending-tab.active { color: var(--viral); border-color: var(--viral); }
+        .nav-btn.saved-tab.active { color: var(--gold); border-color: var(--gold); }
+        .nav-btn.last24-tab.active { color: var(--green); border-color: var(--green); }
 
-        /* PITCH BAR (Visible only in Saved Tab) */
+        /* PITCH BAR */
         #pitch-bar {
-            display: none; background: #fff; margin: 20px 30px 0 30px; padding: 15px; border-radius: 12px;
-            border: 1px solid var(--border); box-shadow: 0 2px 10px var(--shadow);
+            display: none; background: #fff; margin: 20px 40px 0 40px; padding: 15px; border-radius: 8px;
+            border: 1px solid var(--border);
             align-items: center; justify-content: space-between;
         }
         #pitch-bar.show { display: flex; }
         .pitch-btn {
-            background: var(--text-main); color: #fff; border: none; padding: 10px 20px; border-radius: 8px;
+            background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px;
             font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;
         }
-        .pitch-btn:hover { background: #000; }
+        .pitch-btn:hover { background: #333; }
 
         /* ADD FEED MODAL */
         #add-feed-container {
             display: none; position: absolute; top: 70px; right: 30px; background: #fff; padding: 20px;
-            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); z-index: 200; width: 300px;
+            border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); z-index: 200; width: 300px;
         }
-        #add-feed-container h3 { margin-top: 0; font-size: 1rem; }
         #feed-url-input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; }
+
+        /* QUICK VIEW MODAL */
+        #modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); z-index: 2000;
+            justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s;
+        }
+        #modal-overlay.open { display: flex; opacity: 1; }
+
+        #article-modal {
+            background: #fff; width: 90%; max-width: 800px; max-height: 90vh;
+            border-radius: 0; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            position: relative; border: 1px solid #ccc; transform: translateY(20px); transition: transform 0.2s;
+        }
+        #modal-overlay.open #article-modal { transform: translateY(0); }
+
+        #modal-image { height: 350px; background-color: #eee; background-size: cover; background-position: center; }
+        #modal-content { padding: 40px; }
+        #modal-meta { font-size: 0.8rem; color: #666; text-transform: uppercase; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        
+        #modal-title { 
+            font-family: var(--font-serif); /* NYT FONT */
+            font-size: 2.2rem; font-weight: 700; color: #000; line-height: 1.1; margin-bottom: 20px; 
+        }
+        #modal-desc { font-family: var(--font-serif); font-size: 1.2rem; color: #333; line-height: 1.6; margin-bottom: 30px; }
+        
+        #modal-actions { display: flex; gap: 15px; flex-wrap: wrap; }
+        .modal-btn {
+            padding: 12px 24px; border-radius: 4px; font-weight: bold; text-decoration: none; cursor: pointer; border: none; font-size: 0.9rem; transition: 0.2s; font-family: var(--font-sans);
+        }
+        .btn-primary { background: #000; color: #fff; }
+        .btn-primary:hover { background: #333; }
+        .btn-secondary { background: transparent; border: 1px solid #ccc; color: #000; }
+        .btn-secondary:hover { background: #f5f5f5; }
+        
+        #close-modal {
+            position: absolute; top: 20px; right: 20px; background: #fff; width: 40px; height: 40px;
+            border-radius: 50%; border: 1px solid #eee; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
 
         /* GRID */
         #news-container { padding: 30px 40px; }
-        #news-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;
-            max-width: 1600px; margin: 0 auto;
-        }
+        #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; max-width: 1600px; margin: 0 auto; }
 
         /* CARD DESIGN */
         .news-card {
-            background: var(--card-bg); border-radius: 16px; overflow: hidden; display: flex;
+            background: var(--card-bg); border-radius: 4px; overflow: hidden; display: flex;
             flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 10px var(--shadow);
+            border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            cursor: pointer;
         }
-        .news-card.is-fresh { border: 2px solid var(--green); }
-        .news-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+        .news-card.is-fresh { border: 1px solid var(--green); }
+        .news-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 
-        .card-image { height: 170px; background-color: #f0f0f0; background-size: cover; background-position: center; position: relative; }
+        .card-image { height: 180px; background-color: #f0f0f0; background-size: cover; background-position: center; position: relative; pointer-events: none; }
         
         .fresh-badge {
-            display: none; position: absolute; top: 12px; right: 12px; background: var(--green); color: #fff;
-            font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 20px; z-index: 20; letter-spacing: 0.5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: none; position: absolute; top: 10px; right: 10px; background: var(--green); color: #fff;
+            font-size: 0.6rem; font-weight: 700; padding: 4px 8px; border-radius: 2px; z-index: 20; letter-spacing: 0.5px; text-transform: uppercase;
         }
         .is-fresh .fresh-badge { display: block; }
 
         .category-badge {
-            position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); color: var(--text-main);
-            padding: 4px 10px; font-size: 0.65rem; border-radius: 20px; text-transform: uppercase; font-weight: 800;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); backdrop-filter: blur(4px);
+            position: absolute; top: 10px; left: 10px; background: #fff; color: #000;
+            padding: 4px 8px; font-size: 0.6rem; border-radius: 2px; text-transform: uppercase; font-weight: 800; z-index: 20; border: 1px solid rgba(0,0,0,0.1);
         }
 
-        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; }
+        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; pointer-events: auto; z-index: 30; }
         .icon-btn {
-            background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.05); color: var(--text-main); width: 34px; height: 34px;
+            background: #fff; border: 1px solid rgba(0,0,0,0.1); color: #000; width: 32px; height: 32px;
             border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; backdrop-filter: blur(4px); box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .icon-btn:hover { background: #fff; transform: scale(1.1); color: var(--accent-hover); }
+        .icon-btn:hover { background: #000; color: #fff; transform: scale(1.05); }
         .star-btn.is-saved { background: var(--gold); color: #fff; border-color: var(--gold); }
+        
+        /* New Similar Button Style */
+        .sim-btn:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
 
-        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .source-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--accent-hover); margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .date-display { color: var(--text-muted); font-weight: normal; }
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; pointer-events: none; }
+        .source-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .date-display { color: #999; font-weight: normal; }
         .is-fresh .date-display { color: var(--green); font-weight: bold; }
         
         .headline { 
-            font-size: 1.05rem; font-weight: 700; margin: 0 0 12px 0; line-height: 1.4; color: var(--text-main);
-            font-family: "Georgia", serif; /* Editorial feel for headlines */
+            font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.3; color: #000; 
+            font-family: var(--font-serif); /* NYT FONT */
         }
-        .headline a { text-decoration: none; color: inherit; }
-        .headline a:hover { color: var(--accent-hover); text-decoration: underline; text-decoration-color: var(--border); }
-        
-        .snippet { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .snippet { font-size: 0.95rem; color: #555; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-family: var(--font-serif); }
 
         /* LIST VIEW */
-        .list-view #news-grid { grid-template-columns: 1fr; max-width: 900px; gap: 15px; }
-        .list-view .news-card { flex-direction: row; height: 110px; align-items: center; }
-        .list-view .card-image { width: 140px; height: 100%; flex-shrink: 0; }
+        .list-view #news-grid { grid-template-columns: 1fr; max-width: 900px; gap: 10px; }
+        .list-view .news-card { flex-direction: row; height: 100px; align-items: center; border: none; border-bottom: 1px solid #eee; border-radius: 0; box-shadow: none; }
+        .list-view .news-card:hover { transform: none; background: #fafafa; }
+        .list-view .card-image { width: 130px; height: 100%; flex-shrink: 0; }
         .list-view .fresh-badge { top: 5px; right: auto; left: 5px; }
         .list-view .category-badge { display: none; }
         .list-view .action-group { right: 15px; bottom: auto; }
-        .list-view .icon-btn { width: 28px; height: 28px; font-size: 0.8rem; }
+        .list-view .icon-btn { width: 26px; height: 26px; font-size: 0.8rem; }
         .list-view .card-content { padding: 10px 20px; justify-content: center; }
-        .list-view .snippet { display: none; } /* Super clean list */
+        .list-view .snippet { display: none; }
         .list-view .headline { font-size: 1rem; margin-bottom: 5px; -webkit-line-clamp: 2; }
 
         #toast {
-            visibility: hidden; min-width: 250px; background-color: var(--text-main); color: #fff; text-align: center;
-            border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-weight: 500; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            visibility: hidden; min-width: 250px; background-color: #000; color: #fff; text-align: center;
+            border-radius: 4px; padding: 16px; position: fixed; z-index: 3000; left: 50%; bottom: 30px;
+            transform: translateX(-50%); font-weight: 500;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; font-style: italic; }
+        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; font-style: italic; font-family: var(--font-serif); }
     </style>
 </head>
 <body>
+
+<div id="modal-overlay" onclick="closeModal(event)">
+    <div id="article-modal">
+        <button id="close-modal" onclick="closeModal(event)">×</button>
+        <div id="modal-image"></div>
+        <div id="modal-content">
+            <div id="modal-meta">
+                <span id="modal-source">Source</span>
+                <span id="modal-date">Date</span>
+            </div>
+            <div id="modal-title">Article Headline</div>
+            <div id="modal-desc">Article summary text goes here...</div>
+            
+            <div id="modal-actions">
+                <a id="modal-link-btn" href="#" target="_blank" class="modal-btn btn-primary">Read Full Story ↗</a>
+                <button id="modal-save-btn" class="modal-btn btn-secondary" onclick="">Save to List</button>
+                <button id="modal-similar-btn" class="modal-btn btn-secondary" onclick="">Find Similar 🔗</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <header>
     <div class="header-top">
@@ -216,17 +261,12 @@
         </div>
         
         <div class="tools-group">
-            <input type="text" id="search-input" placeholder="Search keywords..." onkeyup="handleSearch()">
+            <input type="text" id="search-input" placeholder="Search news..." onkeyup="handleSearch()">
             
             <button class="tool-btn" onclick="toggleView()" title="View Mode"><span id="view-icon">☰ List</span></button>
             <button class="tool-btn" onclick="toggleAddFeed()" title="Add Custom Feed">➕ Source</button>
             <button class="tool-btn" onclick="init()" title="Refresh">↻</button>
         </div>
-    </div>
-
-    <div id="keyword-cloud">
-        <span class="cloud-label">Buzzing Now:</span>
-        <span id="cloud-tags">Scanning...</span>
     </div>
     
     <div class="nav-bar">
@@ -268,7 +308,7 @@
     // --- ICONS (SVG) ---
     const iconCopy = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
     const iconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
-    const iconScholar = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
+    const iconSimilar = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg>`;
 
     // --- BASE SOURCES ---
     const defaultFeeds = [
@@ -302,8 +342,6 @@
     let allArticles = []; 
     let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
     let customFeeds = JSON.parse(localStorage.getItem('nurinsCustomFeeds')) || [];
-    
-    // Combine defaults with custom
     let activeFeeds = [...defaultFeeds, ...customFeeds];
 
     let currentView = 'all'; 
@@ -313,12 +351,68 @@
         document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }, 1000);
 
+    // --- MODAL LOGIC ---
+    function openArticle(link) {
+        let article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
+        if(!article) return;
+
+        document.getElementById('modal-image').style.backgroundImage = `url('${article.img || ''}')`;
+        document.getElementById('modal-source').innerText = article.source;
+        document.getElementById('modal-date').innerText = new Date(article.time).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        document.getElementById('modal-title').innerText = article.title;
+        document.getElementById('modal-desc').innerText = article.desc; 
+        
+        document.getElementById('modal-link-btn').href = article.link;
+        document.getElementById('modal-save-btn').onclick = function() { toggleFavorite(article.link); showToast("Saved!"); };
+        
+        document.getElementById('modal-similar-btn').onclick = function() { 
+            closeModal({target: {id: 'close-modal'}}); 
+            findSimilar(article.title); 
+        };
+
+        document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function closeModal(e) {
+        if(e.target.id === 'modal-overlay' || e.target.id === 'close-modal') {
+            document.getElementById('modal-overlay').classList.remove('open');
+        }
+    }
+
+    // --- SIMILAR FINDER LOGIC ---
+    function findSimilar(title) {
+        const stopWords = ['the','a','an','and','or','but','in','on','at','to','for','of','with','by','is','are','was','were','new','study','finds','scientists','researchers','says','report','daily','news'];
+        const words = title.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 3 && !stopWords.includes(w));
+
+        if (words.length === 0) { showToast("No distinct keywords found."); return; }
+
+        const similar = allArticles.filter(article => {
+            if (article.title === title) return false; 
+            const t = article.title.toLowerCase();
+            return words.some(w => t.includes(w));
+        });
+
+        similar.sort((a, b) => {
+            const countA = words.filter(w => a.title.toLowerCase().includes(w)).length;
+            const countB = words.filter(w => b.title.toLowerCase().includes(w)).length;
+            return countB - countA;
+        });
+
+        if (similar.length === 0) {
+            showToast("No similar stories found.");
+        } else {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('search-input').value = `Related: ${words.slice(0,2).join(' ')}...`;
+            currentView = 'similar'; 
+            renderGrid(similar);
+            showToast(`Found ${similar.length} related stories!`);
+        }
+    }
+
     // --- ACTIONS ---
     function copyLink(link) { navigator.clipboard.writeText(link).then(() => showToast("Link copied!")); }
     function googleSearch(title) { window.open(`https://news.google.com/search?q=${encodeURIComponent(title)}`, '_blank'); }
-    function scholarSearch(title) { window.open(`https://scholar.google.com/scholar?q=${encodeURIComponent(title)}`, '_blank'); }
 
-    // --- CUSTOM FEED LOGIC ---
     function toggleAddFeed() {
         const el = document.getElementById('add-feed-container');
         el.style.display = el.style.display === 'block' ? 'none' : 'block';
@@ -331,56 +425,21 @@
             const newFeed = { category: "Custom", name: name, url: url };
             customFeeds.push(newFeed);
             localStorage.setItem('nurinsCustomFeeds', JSON.stringify(customFeeds));
-            
-            // Reload page to refresh feeds
             location.reload(); 
         } else {
             showToast("Please enter both name and URL");
         }
     }
 
-    // --- PITCH EXPORT LOGIC ---
     function copyPitch() {
         if(favorites.length === 0) { showToast("No stories saved to pitch!"); return; }
-        
         let text = "Here are potential stories for today:\n\n";
         favorites.forEach((fav, index) => {
             text += `${index + 1}. ${fav.title} (${fav.source})\n   ${fav.link}\n\n`;
         });
-        
         navigator.clipboard.writeText(text).then(() => showToast("Pitch list copied to clipboard!"));
     }
 
-    // --- VIRAL KEYWORD LOGIC ---
-    function generateKeywordCloud() {
-        const stopWords = ["the","and","a","to","of","in","for","on","with","at","from","by","is","it","that","new","scientists","study","finds","reveals","how","why","what","space","nasa"];
-        const wordCounts = {};
-
-        allArticles.forEach(a => {
-            // Simple tokenization
-            const words = a.title.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
-            words.forEach(w => {
-                if(w.length > 3 && !stopWords.includes(w)) {
-                    wordCounts[w] = (wordCounts[w] || 0) + 1;
-                }
-            });
-        });
-
-        // Sort by frequency
-        const sorted = Object.entries(wordCounts).sort((a,b) => b[1] - a[1]).slice(0, 6); // Top 6
-        
-        const container = document.getElementById('cloud-tags');
-        container.innerHTML = sorted.map(pair => 
-            `<span class="keyword-tag" onclick="filterByKeyword('${pair[0]}')">#${pair[0]}</span>`
-        ).join(' ');
-    }
-
-    function filterByKeyword(word) {
-        document.getElementById('search-input').value = word;
-        handleSearch();
-    }
-
-    // --- CORE LOGIC ---
     function toggleFavorite(link) {
         let article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
         if (!article) return;
@@ -388,7 +447,6 @@
         if (index > -1) { favorites.splice(index, 1); } 
         else { favorites.push(article); }
         localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
-
         if (currentView === 'saved') renderGrid(favorites);
         else renderGrid(getFilteredAndSearchedList());
     }
@@ -419,6 +477,8 @@
         else if (currentView === 'last24h') {
             const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
             list = allArticles.filter(a => new Date(a.time) > oneDayAgo);
+        } else if (currentView === 'similar') {
+            return; // Handled by findSimilar
         } else list = allArticles.filter(a => a.category === currentView);
 
         const term = document.getElementById('search-input').value.toLowerCase();
@@ -464,7 +524,7 @@
                     title: item.querySelector("title").textContent,
                     link: item.querySelector("link").textContent || item.querySelector("link").getAttribute("href"),
                     time: pubDate,
-                    desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 150) + "...",
+                    desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 300) + "...",
                     img: img
                 };
             }).filter(item => item !== null);
@@ -472,7 +532,6 @@
     }
 
     async function init() {
-        // Import Logic (URL Sync)
         const urlParams = new URLSearchParams(window.location.search);
         const importData = urlParams.get('import');
         if (importData) {
@@ -501,7 +560,6 @@
         allArticles = results.flat().sort((a, b) => b.time - a.time);
         loading.style.display = 'none';
         
-        generateKeywordCloud();
         renderGrid(allArticles);
     }
 
@@ -521,9 +579,13 @@
             const isFresh = hoursOld < FRESH_HOURS;
             const isFav = favorites.some(f => f.link === news.link);
             const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            let badgeColor = news.category === 'trending' ? 'var(--viral)' : 'rgba(255,255,255,0.9)';
             
             card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
+            
+            card.onclick = function(e) {
+                if(e.target.closest('.action-group')) return;
+                openArticle(news.link);
+            };
             
             const imgHtml = news.img 
                 ? `background-image: url('${news.img}')`
@@ -537,7 +599,7 @@
                     <div class="category-badge">${news.category}</div>
                     
                     <div class="action-group">
-                        <button class="icon-btn" onclick="scholarSearch('${safeTitle}')" title="Find Study on Scholar">${iconScholar}</button>
+                        <button class="icon-btn sim-btn" onclick="findSimilar('${safeTitle}')" title="Find Similar Stories">${iconSimilar}</button>
                         <button class="icon-btn" onclick="googleSearch('${safeTitle}')" title="Check News Coverage">${iconSearch}</button>
                         <button class="icon-btn" onclick="copyLink('${news.link}')" title="Copy Link">${iconCopy}</button>
                         <button class="icon-btn star-btn ${isFav ? 'is-saved' : ''}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
@@ -548,14 +610,13 @@
                         <span>${news.source}</span>
                         <span class="date-display">${dateStr}</span>
                     </div>
-                    <div class="headline"><a href="${news.link}" target="_blank">${news.title}</a></div>
+                    <div class="headline">${news.title}</div>
                     <div class="snippet">${news.desc}</div>
                 </div>
             `;
             grid.appendChild(card);
         });
         
-        // Show Pitch Bar if Saved View
         const pitchBar = document.getElementById('pitch-bar');
         const syncBtn = document.getElementById('sync-btn');
         if(currentView === 'saved') {
@@ -566,21 +627,6 @@
             pitchBar.classList.remove('show');
             syncBtn.style.display = 'none';
         }
-    }
-
-    function filterCategory(cat, btnElement) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
-        currentView = cat;
-        renderGrid(getFilteredAndSearchedList());
-    }
-
-    function showFavorites(btnElement) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
-        currentView = 'saved';
-        const sortedFavs = [...favorites].sort((a,b) => new Date(b.time) - new Date(a.time));
-        renderGrid(sortedFavs);
     }
 
     function generateSyncLink() {

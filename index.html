@@ -1,232 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurin's Little Helper</title>
-    <style>
-        :root {
-            --bg-color: #fdfcf8; --header-bg: #f7f5f2; --card-bg: #ffffff; --text-main: #121212; --text-muted: #666666;
-            --accent: #c0a080; --viral: #b91c1c; --green: #047857; --gold: #d97706; --border: #e2e2e2;
-            --font-serif: "Georgia", serif; --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        }
-        body { font-family: var(--font-sans); background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.5; }
-        header { background: var(--header-bg); padding: 20px 40px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 20px; flex-wrap: wrap; }
-        .title-group h1 { margin: 0; font-size: 1.8rem; color: #000; font-family: var(--font-serif); font-weight: 700; }
-        #progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: transparent; }
-        #progress-bar { height: 100%; background: #000; width: 0%; transition: width 0.4s ease; }
-        .tools-group { display: flex; gap: 10px; }
-        #search-input { background: #fff; border: 1px solid #ccc; padding: 8px 18px; border-radius: 4px; width: 220px; outline: none; }
-        .tool-btn { background: #fff; border: 1px solid #ccc; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500; }
-        .nav-bar { display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-        .nav-btn { background: transparent; color: #666; border: none; padding: 6px 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
-        .nav-btn.active { color: #000; border-bottom: 2px solid #000; }
-        .nav-btn.saved-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-        #pitch-bar { display: none; background: #fff; margin: 20px 40px 0; padding: 15px; border: 1px solid var(--border); justify-content: space-between; align-items: center; }
-        #pitch-bar.show { display: flex; }
-        .pitch-btn { background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
-        #modal-overlay.open { display: flex; }
-        #article-modal { background: #fff; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid #ccc; }
-        #modal-image { height: 350px; background-size: cover; background-position: center; background-color: #eee; }
-        #modal-content { padding: 40px; }
-        #modal-title { font-family: var(--font-serif); font-size: 2.2rem; line-height: 1.1; margin-bottom: 20px; }
-        #modal-desc { font-family: var(--font-serif); font-size: 1.2rem; color: #333; margin-bottom: 30px; }
-        #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 30px 40px; max-width: 1600px; margin: 0 auto; }
-        .news-card { background: #fff; border: 1px solid var(--border); cursor: pointer; position: relative; display: flex; flex-direction: column; }
-        .card-image { height: 180px; background-size: cover; background-position: center; background-color: #f0f0f0; }
-        .category-badge { position: absolute; top: 10px; left: 10px; background: #fff; padding: 4px 8px; font-size: 0.6rem; font-weight: 800; border: 1px solid #eee; text-transform: uppercase; }
-        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; pointer-events: auto; }
-        .icon-btn { background: #fff; border: 1px solid #eee; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .star-btn.is-saved { background: var(--gold) !important; color: #fff !important; }
-        .card-content { padding: 20px; }
-        .headline { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
-        #toast { visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 12px 24px; border-radius: 4px; z-index: 3000; }
-        #toast.show { visibility: visible; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nurin's Little Helper</title>
+
+<style>
+:root{
+    --bg:#fdfcf8;--header:#f7f5f2;--card:#fff;--text:#121212;
+    --muted:#666;--gold:#d97706;--border:#e2e2e2;
+    --serif:Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;background:var(--header);padding:20px 40px;border-bottom:1px solid var(--border);z-index:100}
+h1{margin:0;font-family:var(--serif)}
+.tools{display:flex;gap:10px;margin-top:10px}
+input{padding:8px 14px;border:1px solid #ccc;border-radius:4px}
+button{cursor:pointer}
+.nav{display:flex;gap:10px;margin-top:15px}
+.nav-btn{background:none;border:none;font-weight:700;font-size:.85rem;color:#666}
+.nav-btn.active{color:#000;border-bottom:2px solid #000}
+.nav-btn.saved.active{color:var(--gold);border-color:var(--gold)}
+
+#pitch-bar{display:none;margin:20px 40px;padding:15px;border:1px solid var(--border);background:#fff;justify-content:space-between}
+#pitch-bar.show{display:flex}
+
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:30px;padding:30px 40px}
+.card{border:1px solid var(--border);background:#fff;cursor:pointer;position:relative}
+.card img{width:100%;height:180px;object-fit:cover;display:block}
+.card-content{padding:15px}
+.headline{font-family:var(--serif);font-weight:700}
+
+.star{position:absolute;bottom:10px;right:10px;width:32px;height:32px;border-radius:50%;border:1px solid #eee;background:#fff}
+.star.saved{background:var(--gold);color:#fff}
+
+#modal{display:none;position:fixed;inset:0;background:rgba(255,255,255,.95);z-index:2000;justify-content:center;align-items:center}
+#modal.open{display:flex}
+.modal-box{background:#fff;max-width:800px;width:90%;max-height:90vh;overflow:auto;border:1px solid #ccc}
+.modal-img{height:350px}
+.modal-img img{width:100%;height:100%;object-fit:cover}
+.modal-content{padding:40px}
+
+#toast{visibility:hidden;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:12px 24px;border-radius:4px}
+#toast.show{visibility:visible}
+</style>
 </head>
+
 <body>
 
-<div id="modal-overlay" onclick="closeModal(event)">
-    <div id="article-modal">
-        <button onclick="closeModal(event)" style="position:absolute; top:20px; right:20px; background:#fff; border:1px solid #eee; width:40px; height:40px; border-radius:50%; cursor:pointer;">×</button>
-        <div id="modal-image"></div>
-        <div id="modal-content">
-            <div id="modal-title"></div>
-            <div id="modal-desc"></div>
-            <a id="modal-link-btn" href="#" target="_blank" class="pitch-btn" style="text-decoration:none; display:inline-block;">Read Full Story ↗</a>
-        </div>
-    </div>
-</div>
-
 <header>
-    <div class="header-top">
-        <div class="title-group"><h1>Nurin's Little Helper</h1></div>
-        <div class="tools-group">
-            <input type="text" id="search-input" placeholder="Search news..." oninput="render()">
-            <button class="tool-btn" onclick="init()">↻ Sync</button>
-        </div>
+    <h1>Nurin's Little Helper</h1>
+    <div class="tools">
+        <input id="search" placeholder="Search..." oninput="debouncedRender()">
+        <button onclick="init()">↻ Sync</button>
     </div>
-    <div id="progress-bar-container"><div id="progress-bar"></div></div>
-    <div class="nav-bar">
-        <button class="nav-btn briefing-tab" onclick="changeTab('briefing', this)">☕ Briefing</button>
-        <button class="nav-btn last24-tab" onclick="changeTab('last24h', this)">🕒 24h</button>
-        <button class="nav-btn active" onclick="changeTab('all', this)">All</button>
-        <button class="nav-btn" onclick="changeTab('space', this)">Space</button>
-        <button class="nav-btn" onclick="changeTab('health', this)">Health</button>
-        <button class="nav-btn" onclick="changeTab('environment', this)">Nature</button>
-        <button class="nav-btn" onclick="changeTab('tech', this)">Tech</button>
-        <button class="nav-btn saved-tab" onclick="changeTab('saved', this)">★ Saved</button>
+    <div class="nav">
+        <button class="nav-btn active" onclick="changeTab('all',this)">All</button>
+        <button class="nav-btn" onclick="changeTab('space',this)">Space</button>
+        <button class="nav-btn" onclick="changeTab('health',this)">Health</button>
+        <button class="nav-btn" onclick="changeTab('environment',this)">Nature</button>
+        <button class="nav-btn" onclick="changeTab('tech',this)">Tech</button>
+        <button class="nav-btn saved" onclick="changeTab('saved',this)">★ Saved</button>
     </div>
 </header>
 
 <div id="pitch-bar">
-    <div id="pitch-text">Pitch Builder: <span id="saved-count">0</span> stories.</div>
-    <button class="pitch-btn" onclick="copyPitch()">📋 Copy Pitch List</button>
+    <div>Saved stories: <span id="saved-count">0</span></div>
+    <button onclick="copyPitch()">📋 Copy</button>
+    <button onclick="exportDoc()">📝 Google Doc</button>
 </div>
 
-<div id="news-grid"></div>
-<div id="toast">Notification</div>
+<div id="grid"></div>
+
+<div id="modal" onclick="closeModal(event)">
+    <div class="modal-box">
+        <div class="modal-img"><img id="modal-img"></div>
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-desc"></p>
+            <a id="modal-link" target="_blank">Read full story ↗</a>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
 
 <script>
-    const feeds = [
-        { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
-        { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
-        { category: "environment", name: "Nature News", url: "https://www.nature.com/nature.rss" },
-        { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
-        { category: "trending", name: "BBC Science", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
-        { category: "space", name: "NASA News", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" },
-        { category: "health", name: "ScienceDaily Health", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
-        { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" }
-    ];
+const feeds=[
+ {cat:"space",name:"Space.com",url:"https://www.space.com/feeds/all"},
+ {cat:"health",name:"Medical News Today",url:"https://rss.medicalnewstoday.com/featured.xml"},
+ {cat:"environment",name:"Nature",url:"https://www.nature.com/nature.rss"},
+ {cat:"tech",name:"TechCrunch",url:"https://techcrunch.com/feed/"},
+ {cat:"space",name:"NASA",url:"https://www.nasa.gov/rss/dyn/breaking_news.rss"}
+];
 
-    let allArticles = [];
-    let favorites = JSON.parse(localStorage.getItem('nurinsFavs')) || [];
-    let currentView = 'all';
+let all=[],view='all';
+let favs=JSON.parse(localStorage.getItem('nurinsFavs'))||[];
+const MAX_ITEMS=80;
 
-    async function fetchFeed(feed) {
-        const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
-        try {
-            const res = await fetch(proxy);
-            if (!res.ok) return [];
-            const str = await res.text();
-            const xml = new window.DOMParser().parseFromString(str, "text/xml");
-            const items = Array.from(xml.querySelectorAll("item, entry")).slice(0, 15);
-            return items.map(i => {
-                const link = i.querySelector("link")?.textContent || i.querySelector("link")?.getAttribute("href");
-                let img = i.querySelector("enclosure")?.getAttribute("url") || i.querySelector("content")?.getAttribute("url");
-                if(!img) {
-                    const d = i.querySelector("description")?.textContent || "";
-                    const m = d.match(/src="([^"]+)"/);
-                    if(m) img = m[1];
-                }
-                return {
-                    id: link, category: feed.category, source: feed.name,
-                    title: i.querySelector("title").textContent, link: link,
-                    desc: (i.querySelector("description")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 200),
-                    img: img, time: new Date(i.querySelector("pubDate, published")?.textContent || Date.now())
-                };
-            });
-        } catch(e) { return []; }
-    }
+async function fetchFeed(f){
+ const proxy=`https://api.allorigins.win/raw?url=${encodeURIComponent(f.url)}`;
+ const res=await fetch(proxy); if(!res.ok)return[];
+ const xml=new DOMParser().parseFromString(await res.text(),"text/xml");
+ return [...xml.querySelectorAll("item")].slice(0,12).map(i=>{
+  const link=i.querySelector("link")?.textContent;
+  const d=i.querySelector("description")?.textContent||"";
+  const m=d.match(/src="([^"]+)"/);
+  return{
+    id:link,cat:f.cat,source:f.name,
+    title:i.querySelector("title")?.textContent,
+    link,desc:d.replace(/<[^>]+>/g,'').slice(0,200),
+    img:m?m[1]:"",time:new Date()
+  };
+ });
+}
 
-    async function init() {
-        allArticles = [];
-        document.getElementById('news-grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px;">Syncing wires...</div>';
-        const progressBar = document.getElementById('progress-bar');
-        progressBar.style.width = '10%';
-        
-        let completed = 0;
-        // Launch all fetches in parallel
-        const promises = feeds.map(async (f) => {
-            const news = await fetchFeed(f);
-            news.forEach(a => {
-                if(!allArticles.find(ex => ex.id === a.id)) allArticles.push(a);
-            });
-            completed++;
-            progressBar.style.width = `${(completed / feeds.length) * 100}%`;
-            // Progressive render
-            if (currentView !== 'saved') render();
-        });
+async function init(){
+ all=[];
+ document.getElementById("grid").innerHTML="<p style='grid-column:1/-1;text-align:center'>Loading…</p>";
+ const results=await Promise.all(feeds.map(fetchFeed));
+ results.flat().forEach(a=>{
+  if(!all.find(x=>x.id===a.id)) all.push(a);
+ });
+ all.sort((a,b)=>b.time-a.time);
+ all=all.slice(0,MAX_ITEMS);
+ render();
+}
 
-        await Promise.all(promises);
-        setTimeout(() => progressBar.style.width = '0', 800);
-    }
+function render(){
+ const grid=document.getElementById("grid");
+ const term=document.getElementById("search").value.toLowerCase();
+ let list=view==="saved"?favs:
+          view==="all"?all:all.filter(a=>a.cat===view);
+ if(term) list=list.filter(a=>a.title.toLowerCase().includes(term));
+ grid.innerHTML="";
+ list.forEach(a=>{
+  const saved=favs.some(f=>f.id===a.id);
+  const c=document.createElement("div");
+  c.className="card";
+  c.innerHTML=`
+   <img loading="lazy" src="${a.img}">
+   <button class="star ${saved?'saved':''}" onclick="event.stopPropagation();toggleFav('${a.id}')">★</button>
+   <div class="card-content">
+     <div style="font-size:.7rem">${a.source}</div>
+     <div class="headline">${a.title}</div>
+   </div>`;
+  c.onclick=()=>openModal(a);
+  grid.appendChild(c);
+ });
+ document.getElementById("pitch-bar").classList.toggle("show",view==="saved");
+ document.getElementById("saved-count").innerText=favs.length;
+}
 
-    function render() {
-        const grid = document.getElementById('news-grid');
-        let list = (currentView === 'saved') ? [...favorites] : 
-                   (currentView === 'briefing') ? getBriefing() :
-                   (currentView === 'last24h') ? allArticles.filter(a => (new Date() - a.time) < 86400000) :
-                   (currentView === 'all') ? [...allArticles] : allArticles.filter(a => a.category === currentView);
-        
-        const term = document.getElementById('search-input').value.toLowerCase();
-        if(term) list = list.filter(a => a.title.toLowerCase().includes(term) || a.source.toLowerCase().includes(term));
+function toggleFav(id){
+ const a=all.find(x=>x.id===id)||favs.find(x=>x.id===id);
+ const i=favs.findIndex(x=>x.id===id);
+ i>-1?favs.splice(i,1):favs.push(a);
+ localStorage.setItem("nurinsFavs",JSON.stringify(favs));
+ render();
+}
 
-        grid.innerHTML = '';
-        list.sort((a,b) => b.time - a.time).forEach(a => {
-            const isFav = favorites.some(f => f.id === a.id);
-            const card = document.createElement('div');
-            card.className = 'news-card';
-            card.onclick = (e) => { if(!e.target.closest('.action-group')) openArticle(a); };
-            card.innerHTML = `
-                <div class="card-image" style="background-image:url('${a.img || ''}')">
-                    <div class="category-badge">${a.category}</div>
-                    <div class="action-group">
-                        <button class="icon-btn star-btn ${isFav?'is-saved':''}" onclick="event.stopPropagation(); toggleFav('${a.id}')">★</button>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <div class="source-row">${a.source}</div>
-                    <div class="headline">${a.title}</div>
-                </div>`;
-            grid.appendChild(card);
-        });
+function changeTab(t,b){
+ document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+ b.classList.add("active");
+ view=t; render();
+}
 
-        document.getElementById('pitch-bar').classList.toggle('show', currentView === 'saved');
-        document.getElementById('saved-count').innerText = favorites.length;
-    }
+function openModal(a){
+ document.getElementById("modal-title").innerText=a.title;
+ document.getElementById("modal-desc").innerText=a.desc;
+ document.getElementById("modal-img").src=a.img;
+ document.getElementById("modal-link").href=a.link;
+ document.getElementById("modal").classList.add("open");
+}
 
-    function getBriefing() {
-        const cats = ['space', 'health', 'environment', 'tech'];
-        return cats.map(c => allArticles.find(a => a.category === c)).filter(x => x);
-    }
+function closeModal(e){if(e.target.id==="modal")document.getElementById("modal").classList.remove("open")}
 
-    function changeTab(tab, btn) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentView = tab;
-        render();
-    }
+function copyPitch(){
+ navigator.clipboard.writeText(favs.map(f=>`${f.title} – ${f.link}`).join("\n\n"));
+ toast("Copied");
+}
 
-    function toggleFav(id) {
-        const art = allArticles.find(a => a.id === id) || favorites.find(f => f.id === id);
-        if(!art) return;
-        const idx = favorites.findIndex(f => f.id === id);
-        if(idx > -1) favorites.splice(idx, 1); else favorites.push(art);
-        localStorage.setItem('nurinsFavs', JSON.stringify(favorites));
-        render();
-    }
+function exportDoc(){
+ const html=`<html><body><h2>Nurin Pitch List</h2>${favs.map(f=>`<p><b>${f.title}</b><br><a href="${f.link}">${f.link}</a></p>`).join("")}</body></html>`;
+ const blob=new Blob([html],{type:"application/msword"});
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="Nurin_Pitch_List.doc";
+ a.click();
+}
 
-    function openArticle(a) {
-        document.getElementById('modal-title').innerText = a.title;
-        document.getElementById('modal-desc').innerText = a.desc;
-        document.getElementById('modal-image').style.backgroundImage = `url('${a.img || ''}')`;
-        document.getElementById('modal-link-btn').href = a.link;
-        document.getElementById('modal-overlay').classList.add('open');
-    }
+function toast(t){
+ const el=document.getElementById("toast");
+ el.innerText=t; el.className="show";
+ setTimeout(()=>el.className="",2000);
+}
 
-    function closeModal(e) { if(e.target.id === 'modal-overlay' || e.target.tagName === 'BUTTON') document.getElementById('modal-overlay').classList.remove('open'); }
-    
-    function copyPitch() {
-        const t = favorites.map(f => `${f.title} (${f.source}) - ${f.link}`).join('\n\n');
-        navigator.clipboard.writeText(t);
-        const toast = document.getElementById('toast'); toast.innerText = "Pitch List Copied"; toast.className = 'show';
-        setTimeout(() => toast.className = '', 2000);
-    }
+let timer;
+function debouncedRender(){clearTimeout(timer);timer=setTimeout(render,200)}
 
-    init();
+init();
 </script>
 </body>
 </html>

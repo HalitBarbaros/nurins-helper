@@ -1,35 +1,27 @@
-This is a great addition. A **"Last 24h"** tab essentially acts as your "Daily Briefing" mode, filtering out the older stories from the week so you can focus strictly on what is breaking right now.
-
-I have updated the code to include:
-
-1. **New Tab:** **"🕒 Last 24h"** button in the navigation bar.
-2. **Smart Filter:** When clicked, it looks at *all* your sources (Space, Health, Tech, etc.) and hides anything older than 24 hours.
-
-Here is the updated code.
-
-### **The Code: Nurin's Little Helper (Daily Briefing Edition)**
-
-**Replace your `index.html` file with this.**
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurin's Little Helper | Pro Dashboard</title>
+    <title>Nurin's Little Helper</title>
     <style>
         :root {
-            --bg-color: #0f0f13;
-            --card-bg: #1e1e24;
-            --text-main: #e0e0e0;
-            --text-muted: #9ca3af;
-            --accent: #38bdf8;
-            --viral: #f43f5e;
-            --gold: #fbbf24;
-            --green: #10b981;
-            --nav-active: #2563eb;
-            --fresh-glow: rgba(16, 185, 129, 0.4);
+            /* BEIGE AESTHETIC PALETTE */
+            --bg-color: #fdfcf8;      /* Creamy White */
+            --header-bg: #f2ebe5;     /* Soft Beige */
+            --card-bg: #ffffff;       /* Pure White */
+            --text-main: #3e3b39;     /* Warm Charcoal */
+            --text-muted: #8c8680;    /* Taupe */
+            
+            --accent: #c0a080;        /* Latte / Sand */
+            --accent-hover: #a68a6d;  /* Darker Latte */
+            
+            --viral: #e07a5f;         /* Terracotta (Trending) */
+            --green: #81b29a;         /* Sage Green (Fresh/Action) */
+            --gold: #f2cc8f;          /* Soft Gold (Saved) */
+            
+            --border: #e6e0d8;
+            --shadow: rgba(62, 59, 57, 0.08);
         }
 
         body {
@@ -38,17 +30,18 @@ Here is the updated code.
             color: var(--text-main);
             margin: 0;
             padding: 0;
+            line-height: 1.5;
         }
 
         /* HEADER */
         header {
-            background: rgba(15, 15, 19, 0.98);
-            padding: 15px 30px;
-            border-bottom: 1px solid #333;
+            background: var(--header-bg);
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
 
         .header-top {
@@ -60,104 +53,158 @@ Here is the updated code.
             flex-wrap: wrap;
         }
 
-        .title-group h1 { margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; font-weight: 800; }
-        .title-group span { font-size: 0.8rem; color: #666; font-weight: normal; margin-left: 10px; }
+        .title-group h1 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            letter-spacing: -0.5px; 
+            color: #2c2926; 
+            font-weight: 800; 
+            font-family: "Georgia", serif; /* Editorial feel */
+        }
+        .title-group span { font-family: sans-serif; font-size: 0.85rem; color: var(--text-muted); font-weight: normal; margin-left: 10px; }
 
         .tools-group { display: flex; gap: 10px; align-items: center; flex-grow: 1; justify-content: flex-end; }
 
+        /* INPUTS & BUTTONS */
         #search-input {
-            background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 8px 15px;
-            border-radius: 20px; font-size: 0.9rem; width: 250px; outline: none; transition: all 0.2s;
+            background: #fff; border: 1px solid var(--border); color: var(--text-main); padding: 8px 18px;
+            border-radius: 30px; font-size: 0.9rem; width: 220px; outline: none; transition: all 0.2s;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
-        #search-input:focus { border-color: var(--accent); width: 300px; }
+        #search-input:focus { border-color: var(--accent); width: 280px; box-shadow: 0 0 0 3px rgba(192, 160, 128, 0.2); }
 
         .tool-btn {
-            background: #27272a; border: 1px solid #3f3f46; color: var(--accent); padding: 8px 12px;
-            border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+            background: #fff; border: 1px solid var(--border); color: var(--text-main); padding: 8px 14px;
+            border-radius: 8px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; font-weight: 500;
         }
-        .tool-btn:hover { background: #3f3f46; color: #fff; }
+        .tool-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        .nav-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; margin-top: 10px; }
+        /* KEYWORD CLOUD */
+        #keyword-cloud {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,0,0,0.05);
+            font-size: 0.8rem; align-items: center;
+        }
+        .cloud-label { font-weight: bold; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; margin-right: 5px; }
+        .keyword-tag {
+            background: #fff; padding: 3px 10px; border-radius: 12px; border: 1px solid var(--border);
+            cursor: pointer; color: var(--text-main); transition: 0.2s;
+        }
+        .keyword-tag:hover { border-color: var(--viral); color: var(--viral); transform: translateY(-1px); }
+
+        /* NAV BAR */
+        .nav-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; margin-top: 15px; }
         .nav-bar::-webkit-scrollbar { display: none; }
 
         .nav-btn {
-            background: #27272a; color: #9ca3af; border: 1px solid #3f3f46; padding: 6px 14px;
-            border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; white-space: nowrap;
+            background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 6px 14px;
+            border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; white-space: nowrap;
         }
-        .nav-btn:hover { background: #3f3f46; color: #fff; }
-        .nav-btn.active { background: var(--nav-active); color: #fff; border-color: var(--nav-active); }
-        .nav-btn.trending-tab.active { background: var(--viral); border-color: var(--viral); }
-        .nav-btn.saved-tab.active { background: var(--gold); border-color: var(--gold); color: #000; }
+        .nav-btn:hover { background: #fff; color: var(--accent-hover); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .nav-btn.active { background: var(--text-main); color: #fff; }
         
-        /* Last 24h specific style (optional) */
-        .nav-btn.last24-tab.active { border-color: var(--green); color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .nav-btn.trending-tab.active { background: var(--viral); border-color: var(--viral); }
+        .nav-btn.saved-tab.active { background: var(--gold); border-color: var(--gold); color: #5c4d32; }
+        .nav-btn.last24-tab.active { background: var(--green); color: #fff; }
 
-        #sync-btn {
-            display: none; background: var(--gold); color: #000; border: none; font-weight: bold; margin-left: auto;
+        /* PITCH BAR (Visible only in Saved Tab) */
+        #pitch-bar {
+            display: none; background: #fff; margin: 20px 30px 0 30px; padding: 15px; border-radius: 12px;
+            border: 1px solid var(--border); box-shadow: 0 2px 10px var(--shadow);
+            align-items: center; justify-content: space-between;
         }
+        #pitch-bar.show { display: flex; }
+        .pitch-btn {
+            background: var(--text-main); color: #fff; border: none; padding: 10px 20px; border-radius: 8px;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .pitch-btn:hover { background: #000; }
+
+        /* ADD FEED MODAL */
+        #add-feed-container {
+            display: none; position: absolute; top: 70px; right: 30px; background: #fff; padding: 20px;
+            border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); z-index: 200; width: 300px;
+        }
+        #add-feed-container h3 { margin-top: 0; font-size: 1rem; }
+        #feed-url-input { width: 100%; padding: 8px; margin: 10px 0; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; }
 
         /* GRID */
-        #news-container { padding: 20px 30px; }
+        #news-container { padding: 30px 40px; }
         #news-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;
-            max-width: 1800px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;
+            max-width: 1600px; margin: 0 auto;
         }
 
+        /* CARD DESIGN */
         .news-card {
-            background: var(--card-bg); border-radius: 12px; overflow: hidden; display: flex;
-            flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; border: 1px solid #2d2d35;
+            background: var(--card-bg); border-radius: 16px; overflow: hidden; display: flex;
+            flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 10px var(--shadow);
         }
-        .news-card.is-fresh { border: 1px solid var(--green); box-shadow: 0 0 10px var(--fresh-glow); }
-        .news-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-color: #555; }
+        .news-card.is-fresh { border: 2px solid var(--green); }
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
 
-        .card-image { height: 160px; background-color: #2a2a2a; background-size: cover; background-position: center; position: relative; }
+        .card-image { height: 170px; background-color: #f0f0f0; background-size: cover; background-position: center; position: relative; }
         
         .fresh-badge {
-            display: none; position: absolute; top: 10px; right: 10px; background: var(--green); color: #000;
-            font-size: 0.6rem; font-weight: bold; padding: 2px 6px; border-radius: 4px; z-index: 20;
+            display: none; position: absolute; top: 12px; right: 12px; background: var(--green); color: #fff;
+            font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 20px; z-index: 20; letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .is-fresh .fresh-badge { display: block; }
+
         .category-badge {
-            position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff;
-            padding: 4px 8px; font-size: 0.65rem; border-radius: 6px; text-transform: uppercase; font-weight: 800;
+            position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); color: var(--text-main);
+            padding: 4px 10px; font-size: 0.65rem; border-radius: 20px; text-transform: uppercase; font-weight: 800;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); backdrop-filter: blur(4px);
         }
 
-        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 5px; }
+        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; }
         .icon-btn {
-            background: rgba(0,0,0,0.7); border: none; color: #ccc; width: 32px; height: 32px;
+            background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.05); color: var(--text-main); width: 34px; height: 34px;
             border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; backdrop-filter: blur(4px);
+            transition: all 0.2s; backdrop-filter: blur(4px); box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .icon-btn:hover { background: #fff; color: #000; transform: scale(1.1); }
-        .star-btn.is-saved { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
+        .icon-btn:hover { background: #fff; transform: scale(1.1); color: var(--accent-hover); }
+        .star-btn.is-saved { background: var(--gold); color: #fff; border-color: var(--gold); }
 
-        .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
-        .source-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
-        .date-display { color: #666; font-weight: normal; }
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .source-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--accent-hover); margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .date-display { color: var(--text-muted); font-weight: normal; }
         .is-fresh .date-display { color: var(--green); font-weight: bold; }
-        .headline { font-size: 1rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.4; color: #fff; }
+        
+        .headline { 
+            font-size: 1.05rem; font-weight: 700; margin: 0 0 12px 0; line-height: 1.4; color: var(--text-main);
+            font-family: "Georgia", serif; /* Editorial feel for headlines */
+        }
         .headline a { text-decoration: none; color: inherit; }
-        .headline a:hover { color: var(--accent); }
-        .snippet { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .headline a:hover { color: var(--accent-hover); text-decoration: underline; text-decoration-color: var(--border); }
+        
+        .snippet { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
         /* LIST VIEW */
-        .list-view #news-grid { grid-template-columns: 1fr; max-width: 1000px; }
-        .list-view .news-card { flex-direction: row; height: 120px; align-items: center; }
-        .list-view .card-image { width: 150px; height: 100%; flex-shrink: 0; }
-        .list-view .action-group { top: 5px; right: 5px; bottom: auto; }
-        .list-view .icon-btn { width: 24px; height: 24px; font-size: 0.8rem; }
+        .list-view #news-grid { grid-template-columns: 1fr; max-width: 900px; gap: 15px; }
+        .list-view .news-card { flex-direction: row; height: 110px; align-items: center; }
+        .list-view .card-image { width: 140px; height: 100%; flex-shrink: 0; }
+        .list-view .fresh-badge { top: 5px; right: auto; left: 5px; }
+        .list-view .category-badge { display: none; }
+        .list-view .action-group { right: 15px; bottom: auto; }
+        .list-view .icon-btn { width: 28px; height: 28px; font-size: 0.8rem; }
         .list-view .card-content { padding: 10px 20px; justify-content: center; }
-        .list-view .snippet { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.8rem; }
-        .list-view .headline { font-size: 1.1rem; margin-bottom: 5px; }
+        .list-view .snippet { display: none; } /* Super clean list */
+        .list-view .headline { font-size: 1rem; margin-bottom: 5px; -webkit-line-clamp: 2; }
 
         #toast {
-            visibility: hidden; min-width: 200px; background-color: var(--accent); color: #000; text-align: center;
-            border-radius: 4px; padding: 12px; position: fixed; z-index: 1000; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-weight: bold;
+            visibility: hidden; min-width: 250px; background-color: var(--text-main); color: #fff; text-align: center;
+            border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px;
+            transform: translateX(-50%); font-weight: 500; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; font-style: italic; }
     </style>
 </head>
 <body>
@@ -165,74 +212,88 @@ Here is the updated code.
 <header>
     <div class="header-top">
         <div class="title-group">
-            <h1>Nurin's Little Helper <span id="clock">Initializing...</span></h1>
+            <h1>Nurin's Little Helper <span id="clock">...</span></h1>
         </div>
         
         <div class="tools-group">
-            <input type="text" id="search-input" placeholder="Keyword Search..." onkeyup="handleSearch()">
-            <button class="tool-btn" onclick="toggleView()" title="Toggle List/Grid View"><span id="view-icon">☰ List</span></button>
-            <button class="tool-btn" onclick="init()" title="Refresh Feeds">↻</button>
+            <input type="text" id="search-input" placeholder="Search keywords..." onkeyup="handleSearch()">
+            
+            <button class="tool-btn" onclick="toggleView()" title="View Mode"><span id="view-icon">☰ List</span></button>
+            <button class="tool-btn" onclick="toggleAddFeed()" title="Add Custom Feed">➕ Source</button>
+            <button class="tool-btn" onclick="init()" title="Refresh">↻</button>
         </div>
+    </div>
+
+    <div id="keyword-cloud">
+        <span class="cloud-label">Buzzing Now:</span>
+        <span id="cloud-tags">Scanning...</span>
     </div>
     
     <div class="nav-bar">
         <button class="nav-btn last24-tab" onclick="filterCategory('last24h', this)">🕒 Last 24h</button>
-        
-        <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 TRENDING</button>
+        <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 Trending</button>
         <button class="nav-btn active" onclick="filterCategory('all', this)">All Feeds</button>
         <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
         <button class="nav-btn" onclick="filterCategory('health', this)">Health</button>
-        <button class="nav-btn" onclick="filterCategory('environment', this)">Environment</button>
+        <button class="nav-btn" onclick="filterCategory('environment', this)">Nature</button>
         <button class="nav-btn" onclick="filterCategory('physics', this)">Physics</button>
         <button class="nav-btn" onclick="filterCategory('tech', this)">Tech</button>
         <button class="nav-btn saved-tab" onclick="showFavorites(this)">★ Saved</button>
         
-        <button id="sync-btn" class="nav-btn" onclick="generateSyncLink()">☁️ Sync / Share</button>
+        <button id="sync-btn" class="nav-btn" onclick="generateSyncLink()" style="display:none; margin-left:auto;">☁️ Sync</button>
     </div>
 </header>
 
+<div id="pitch-bar">
+    <div style="font-weight:bold; color:var(--text-main);">Pitch Builder</div>
+    <div style="font-size:0.9rem; color:var(--text-muted);">You have <span id="saved-count">0</span> stories saved.</div>
+    <button class="pitch-btn" onclick="copyPitch()">📋 Copy Pitch List</button>
+</div>
+
+<div id="add-feed-container">
+    <h3>Add Custom RSS Source</h3>
+    <input type="text" id="feed-name-input" placeholder="Source Name (e.g. My Blog)" style="width:100%; padding:8px; border:1px solid #ddd; margin-bottom:5px;">
+    <input type="text" id="feed-url-input" placeholder="RSS URL (https://.../feed)" style="width:100%; padding:8px; border:1px solid #ddd; margin-bottom:10px;">
+    <button class="pitch-btn" style="width:100%; justify-content:center;" onclick="addCustomFeed()">Add Source</button>
+</div>
+
 <div id="news-container">
-    <div id="loading">Scanning global science wires...</div>
+    <div id="loading">Gathering intelligence...</div>
     <div id="news-grid"></div>
 </div>
 
-<div id="toast">Link copied!</div>
+<div id="toast">Notification</div>
 
 <script>
-    // --- ICONS ---
+    // --- ICONS (SVG) ---
     const iconCopy = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
     const iconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+    const iconScholar = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`;
 
-    // --- SOURCES ---
-    const feeds = [
+    // --- BASE SOURCES ---
+    const defaultFeeds = [
         { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
         { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
         { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
         { category: "trending", name: "Scientific American", url: "http://rss.sciam.com/ScientificAmerican-Global" },
-        { category: "trending", name: "Wired", url: "https://www.wired.com/feed/category/science/latest/rss" },
         { category: "trending", name: "Futurism", url: "https://futurism.com/feed" },
         { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
         { category: "space", name: "NASA Image", url: "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" },
         { category: "space", name: "ESA", url: "https://www.esa.int/content/search/rss/feed/topic/1585" },
-        { category: "space", name: "Universe Today", url: "https://www.universetoday.com/feed/" },
         { category: "space", name: "EarthSky", url: "https://earthsky.org/feed" },
         { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
         { category: "health", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
         { category: "health", name: "Stat News", url: "https://www.statnews.com/feed/" },
         { category: "health", name: "NIH Research", url: "https://www.nih.gov/news-events/feed.xml" },
-        { category: "health", name: "Medical Xpress", url: "https://medicalxpress.com/rss-feed/" },
-        { category: "environment", name: "Treehugger", url: "https://www.treehugger.com/feeds/latest.xml" },
         { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
         { category: "environment", name: "EcoWatch", url: "https://www.ecowatch.com/feeds/feed.rss" },
         { category: "environment", name: "Carbon Brief", url: "https://www.carbonbrief.org/feed" },
         { category: "physics", name: "Quanta", url: "https://api.quantamagazine.org/feed/" },
         { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" },
         { category: "physics", name: "APS Physics", url: "https://physics.aps.org/feed.rss" },
-        { category: "physics", name: "Symmetry", url: "https://www.symmetrymagazine.org/feed" },
         { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
         { category: "tech", name: "MIT Tech Review", url: "https://www.technologyreview.com/feed/" },
-        { category: "tech", name: "The Verge", url: "https://www.theverge.com/rss/science/index.xml" },
-        { category: "tech", name: "Ars Technica", url: "https://feeds.arstechnica.com/arstechnica/index" }
+        { category: "tech", name: "The Verge", url: "https://www.theverge.com/rss/science/index.xml" }
     ];
 
     const DAYS_TO_SHOW = 7;
@@ -240,10 +301,14 @@ Here is the updated code.
 
     let allArticles = []; 
     let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
+    let customFeeds = JSON.parse(localStorage.getItem('nurinsCustomFeeds')) || [];
+    
+    // Combine defaults with custom
+    let activeFeeds = [...defaultFeeds, ...customFeeds];
+
     let currentView = 'all'; 
     let isListView = false; 
 
-    // Clock
     setInterval(() => {
         document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }, 1000);
@@ -251,15 +316,77 @@ Here is the updated code.
     // --- ACTIONS ---
     function copyLink(link) { navigator.clipboard.writeText(link).then(() => showToast("Link copied!")); }
     function googleSearch(title) { window.open(`https://news.google.com/search?q=${encodeURIComponent(title)}`, '_blank'); }
-    
+    function scholarSearch(title) { window.open(`https://scholar.google.com/scholar?q=${encodeURIComponent(title)}`, '_blank'); }
+
+    // --- CUSTOM FEED LOGIC ---
+    function toggleAddFeed() {
+        const el = document.getElementById('add-feed-container');
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function addCustomFeed() {
+        const name = document.getElementById('feed-name-input').value;
+        const url = document.getElementById('feed-url-input').value;
+        if(name && url) {
+            const newFeed = { category: "Custom", name: name, url: url };
+            customFeeds.push(newFeed);
+            localStorage.setItem('nurinsCustomFeeds', JSON.stringify(customFeeds));
+            
+            // Reload page to refresh feeds
+            location.reload(); 
+        } else {
+            showToast("Please enter both name and URL");
+        }
+    }
+
+    // --- PITCH EXPORT LOGIC ---
+    function copyPitch() {
+        if(favorites.length === 0) { showToast("No stories saved to pitch!"); return; }
+        
+        let text = "Here are potential stories for today:\n\n";
+        favorites.forEach((fav, index) => {
+            text += `${index + 1}. ${fav.title} (${fav.source})\n   ${fav.link}\n\n`;
+        });
+        
+        navigator.clipboard.writeText(text).then(() => showToast("Pitch list copied to clipboard!"));
+    }
+
+    // --- VIRAL KEYWORD LOGIC ---
+    function generateKeywordCloud() {
+        const stopWords = ["the","and","a","to","of","in","for","on","with","at","from","by","is","it","that","new","scientists","study","finds","reveals","how","why","what","space","nasa"];
+        const wordCounts = {};
+
+        allArticles.forEach(a => {
+            // Simple tokenization
+            const words = a.title.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
+            words.forEach(w => {
+                if(w.length > 3 && !stopWords.includes(w)) {
+                    wordCounts[w] = (wordCounts[w] || 0) + 1;
+                }
+            });
+        });
+
+        // Sort by frequency
+        const sorted = Object.entries(wordCounts).sort((a,b) => b[1] - a[1]).slice(0, 6); // Top 6
+        
+        const container = document.getElementById('cloud-tags');
+        container.innerHTML = sorted.map(pair => 
+            `<span class="keyword-tag" onclick="filterByKeyword('${pair[0]}')">#${pair[0]}</span>`
+        ).join(' ');
+    }
+
+    function filterByKeyword(word) {
+        document.getElementById('search-input').value = word;
+        handleSearch();
+    }
+
+    // --- CORE LOGIC ---
     function toggleFavorite(link) {
         let article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
         if (!article) return;
-
         const index = favorites.findIndex(f => f.link === link);
         if (index > -1) { favorites.splice(index, 1); } 
         else { favorites.push(article); }
-
         localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
 
         if (currentView === 'saved') renderGrid(favorites);
@@ -269,54 +396,9 @@ Here is the updated code.
     function showToast(msg) {
         var x = document.getElementById("toast");
         x.innerText = msg; x.className = "show";
-        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        setTimeout(() => x.className = x.className.replace("show", ""), 3000);
     }
 
-    // --- SYNC / IMPORT LOGIC ---
-    function generateSyncLink() {
-        if (favorites.length === 0) {
-            showToast("No saved articles to sync!");
-            return;
-        }
-        const minifiedFavs = favorites.map(f => ({
-            c: f.category, s: f.source, t: f.title, l: f.link, d: f.time, desc: f.desc, i: f.img
-        }));
-        const jsonString = JSON.stringify(minifiedFavs);
-        const encoded = encodeURIComponent(jsonString);
-        const baseUrl = window.location.href.split('?')[0];
-        const syncUrl = `${baseUrl}?import=${encoded}`;
-
-        navigator.clipboard.writeText(syncUrl).then(() => {
-            showToast("Magic Sync Link Copied! Send it to your other device.");
-        });
-    }
-
-    function checkForImport() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const importData = urlParams.get('import');
-        if (importData) {
-            try {
-                const decoded = decodeURIComponent(importData);
-                const importedItems = JSON.parse(decoded);
-                const converted = importedItems.map(i => ({
-                    category: i.c, source: i.s, title: i.t, link: i.l, time: i.d, desc: i.desc, img: i.i
-                }));
-                let addedCount = 0;
-                converted.forEach(item => {
-                    if (!favorites.some(f => f.link === item.link)) {
-                        favorites.push(item);
-                        addedCount++;
-                    }
-                });
-                localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
-                window.history.replaceState({}, document.title, window.location.pathname);
-                showToast(`Imported ${addedCount} new saved articles!`);
-                showFavorites(document.querySelector('.saved-tab'));
-            } catch (e) { console.error("Import failed", e); }
-        }
-    }
-
-    // --- VIEW TOGGLE ---
     function toggleView() {
         isListView = !isListView;
         const container = document.getElementById('news-container');
@@ -325,7 +407,6 @@ Here is the updated code.
         else { container.classList.remove('list-view'); icon.innerText = "☰ List"; }
     }
 
-    // --- SEARCH & FILTER ---
     function handleSearch() {
         if(currentView === 'saved') renderGrid(favorites);
         else renderGrid(getFilteredAndSearchedList());
@@ -334,27 +415,19 @@ Here is the updated code.
     function getFilteredAndSearchedList() {
         let list;
         const now = new Date();
-
-        // 1. FILTER BY CATEGORY OR TIME
-        if (currentView === 'all') {
-            list = allArticles;
-        } else if (currentView === 'last24h') {
-            // New 24h Logic
+        if (currentView === 'all') list = allArticles;
+        else if (currentView === 'last24h') {
             const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
             list = allArticles.filter(a => new Date(a.time) > oneDayAgo);
-        } else {
-            list = allArticles.filter(a => a.category === currentView);
-        }
+        } else list = allArticles.filter(a => a.category === currentView);
 
-        // 2. FILTER BY SEARCH TERM
         const term = document.getElementById('search-input').value.toLowerCase();
         if (term) {
-            list = list.filter(a => a.title.toLowerCase().includes(term) || a.desc.toLowerCase().includes(term));
+            list = list.filter(a => a.title.toLowerCase().includes(term));
         }
         return list;
     }
 
-    // --- FETCH ENGINE ---
     async function fetchFeed(feed) {
         const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
@@ -399,65 +472,73 @@ Here is the updated code.
     }
 
     async function init() {
-        checkForImport();
+        // Import Logic (URL Sync)
+        const urlParams = new URLSearchParams(window.location.search);
+        const importData = urlParams.get('import');
+        if (importData) {
+            try {
+                const decoded = decodeURIComponent(importData);
+                const imported = JSON.parse(decoded);
+                const converted = imported.map(i => ({ category: i.c, source: i.s, title: i.t, link: i.l, time: i.d, desc: i.desc, img: i.i }));
+                let count = 0;
+                converted.forEach(item => {
+                    if (!favorites.some(f => f.link === item.link)) { favorites.push(item); count++; }
+                });
+                localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showToast(`Imported ${count} saved stories!`);
+                showFavorites(document.querySelector('.saved-tab'));
+            } catch (e) {}
+        }
+
         const loading = document.getElementById('loading');
         loading.style.display = 'block';
         document.getElementById('news-grid').innerHTML = '';
 
-        const promises = feeds.map(f => fetchFeed(f));
+        const promises = activeFeeds.map(f => fetchFeed(f));
         const results = await Promise.all(promises);
         
         allArticles = results.flat().sort((a, b) => b.time - a.time);
         loading.style.display = 'none';
         
-        // Render current view
-        if(currentView === 'saved') showFavorites(document.querySelector('.saved-tab'));
-        else renderGrid(getFilteredAndSearchedList());
+        generateKeywordCloud();
+        renderGrid(allArticles);
     }
 
-    // --- RENDER ---
     function renderGrid(articles) {
         const grid = document.getElementById('news-grid');
         grid.innerHTML = '';
         const now = new Date();
 
-        // Search in saved view logic
-        const term = document.getElementById('search-input').value.toLowerCase();
-        if (term && currentView === 'saved') { 
-             articles = articles.filter(a => a.title.toLowerCase().includes(term));
-        }
-
         if (articles.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No articles found for this filter.</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#999; margin-top:50px;">No stories found here.</div>`;
             return;
         }
 
         articles.forEach(news => {
             const card = document.createElement('div');
-            
             const hoursOld = (now - new Date(news.time)) / (1000 * 60 * 60);
             const isFresh = hoursOld < FRESH_HOURS;
+            const isFav = favorites.some(f => f.link === news.link);
+            const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            let badgeColor = news.category === 'trending' ? 'var(--viral)' : 'rgba(255,255,255,0.9)';
             
             card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
             
             const imgHtml = news.img 
                 ? `background-image: url('${news.img}')`
-                : `background: linear-gradient(45deg, #1c1c1c, #2a2a2a); display:flex; align-items:center; justify-content:center; color:#444; content:'No Image'`;
-
-            const isFav = favorites.some(f => f.link === news.link);
-            const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            let badgeColor = getCatColor(news.category);
-            if(news.category === 'trending') badgeColor = '#f43f5e';
+                : `background: linear-gradient(45deg, #e6e0d8, #d4a373); display:flex; align-items:center; justify-content:center; color:#fff; content:'No Image'`;
 
             const safeTitle = news.title.replace(/'/g, "\\'");
 
             card.innerHTML = `
                 <div class="card-image" style="${imgHtml}">
                     <div class="fresh-badge">NEW</div>
-                    <div class="category-badge" style="background:${badgeColor}">${news.category}</div>
+                    <div class="category-badge">${news.category}</div>
                     
                     <div class="action-group">
-                        <button class="icon-btn" onclick="googleSearch('${safeTitle}')" title="Fact Check on Google News">${iconSearch}</button>
+                        <button class="icon-btn" onclick="scholarSearch('${safeTitle}')" title="Find Study on Scholar">${iconScholar}</button>
+                        <button class="icon-btn" onclick="googleSearch('${safeTitle}')" title="Check News Coverage">${iconSearch}</button>
                         <button class="icon-btn" onclick="copyLink('${news.link}')" title="Copy Link">${iconCopy}</button>
                         <button class="icon-btn star-btn ${isFav ? 'is-saved' : ''}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
                     </div>
@@ -474,9 +555,17 @@ Here is the updated code.
             grid.appendChild(card);
         });
         
+        // Show Pitch Bar if Saved View
+        const pitchBar = document.getElementById('pitch-bar');
         const syncBtn = document.getElementById('sync-btn');
-        if(currentView === 'saved') syncBtn.style.display = 'block';
-        else syncBtn.style.display = 'none';
+        if(currentView === 'saved') {
+            pitchBar.classList.add('show');
+            syncBtn.style.display = 'block';
+            document.getElementById('saved-count').innerText = articles.length;
+        } else {
+            pitchBar.classList.remove('show');
+            syncBtn.style.display = 'none';
+        }
     }
 
     function filterCategory(cat, btnElement) {
@@ -494,13 +583,13 @@ Here is the updated code.
         renderGrid(sortedFavs);
     }
 
-    function getCatColor(cat) {
-        if(cat === 'space') return '#8b5cf6'; 
-        if(cat === 'health') return '#ef4444'; 
-        if(cat === 'environment') return '#10b981'; 
-        if(cat === 'physics') return '#f59e0b'; 
-        if(cat === 'tech') return '#3b82f6'; 
-        return '#666';
+    function generateSyncLink() {
+        if (favorites.length === 0) { showToast("Nothing to sync!"); return; }
+        const minifiedFavs = favorites.map(f => ({ c: f.category, s: f.source, t: f.title, l: f.link, d: f.time, desc: f.desc, i: f.img }));
+        const jsonString = JSON.stringify(minifiedFavs);
+        const encoded = encodeURIComponent(jsonString);
+        const baseUrl = window.location.href.split('?')[0];
+        navigator.clipboard.writeText(`${baseUrl}?import=${encoded}`).then(() => showToast("Sync Link Copied!"));
     }
 
     init();
@@ -508,5 +597,3 @@ Here is the updated code.
 </script>
 </body>
 </html>
-
-```

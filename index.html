@@ -1,626 +1,221 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurin's Little Helper | Pro Dashboard</title>
-    <style>
-        :root {
-            --bg-color: #0f0f13;
-            --card-bg: #1e1e24;
-            --text-main: #e0e0e0;
-            --text-muted: #9ca3af;
-            --accent: #38bdf8; /* Blue */
-            --viral: #f43f5e;   /* Pink */
-            --gold: #fbbf24;    /* Yellow */
-            --green: #10b981;   /* Green */
-            --nav-active: #2563eb;
-            --fresh-glow: rgba(16, 185, 129, 0.4);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-        }
-
-        /* HEADER */
-        header {
-            background: rgba(15, 15, 19, 0.98);
-            padding: 15px 30px;
-            border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .title-group h1 { margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; font-weight: 800; }
-        .title-group span { font-size: 0.8rem; color: #666; font-weight: normal; margin-left: 10px; }
-
-        .tools-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-grow: 1;
-            justify-content: flex-end;
-        }
-
-        /* SEARCH BAR */
-        #search-input {
-            background: #27272a;
-            border: 1px solid #3f3f46;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            width: 250px;
-            outline: none;
-            transition: all 0.2s;
-        }
-        #search-input:focus { border-color: var(--accent); width: 300px; }
-
-        /* TOGGLE BUTTONS */
-        .tool-btn {
-            background: #27272a;
-            border: 1px solid #3f3f46;
-            color: var(--accent);
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .tool-btn:hover { background: #3f3f46; color: #fff; }
-
-        /* NAV BAR */
-        .nav-bar {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            scrollbar-width: none;
-            margin-top: 10px;
-        }
-        .nav-bar::-webkit-scrollbar { display: none; }
-
-        .nav-btn {
-            background: #27272a;
-            color: #9ca3af;
-            border: 1px solid #3f3f46;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .nav-btn:hover { background: #3f3f46; color: #fff; }
-        .nav-btn.active { background: var(--nav-active); color: #fff; border-color: var(--nav-active); }
-        .nav-btn.trending-tab.active { background: var(--viral); border-color: var(--viral); }
-        .nav-btn.saved-tab.active { background: var(--gold); border-color: var(--gold); color: #000; }
-
-        /* TOAST */
-        #toast {
-            visibility: hidden;
-            min-width: 200px;
-            background-color: var(--accent);
-            color: #000;
-            text-align: center;
-            border-radius: 4px;
-            padding: 12px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-weight: bold;
-        }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-
-        /* GRID LAYOUT (Default) */
-        #news-container { padding: 20px 30px; }
-        
-        #news-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1800px;
-            margin: 0 auto;
-        }
-
-        /* CARD DESIGN (Grid Mode) */
-        .news-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            border: 1px solid #2d2d35;
-        }
-        
-        /* FRESH NEWS GLOW (Only < 12 hours) */
-        .news-card.is-fresh {
-            border: 1px solid var(--green);
-            box-shadow: 0 0 10px var(--fresh-glow);
-        }
-
-        .news-card:hover { 
-            transform: translateY(-4px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border-color: #555;
-        }
-
-        .card-image {
-            height: 160px;
-            background-color: #2a2a2a;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        .fresh-badge {
-            display: none; /* Hidden by default */
-            position: absolute;
-            top: 10px;
-            right: 10px; /* Right side to not overlap category */
-            background: var(--green);
-            color: #000;
-            font-size: 0.6rem;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            z-index: 20;
-        }
-        .is-fresh .fresh-badge { display: block; }
-
-        .category-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 0.65rem;
-            border-radius: 6px;
-            text-transform: uppercase;
-            font-weight: 800;
-        }
-
-        /* ACTION BUTTONS */
-        .action-group {
-            position: absolute;
-            bottom: 10px; /* Moved to bottom of image */
-            right: 10px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .icon-btn {
-            background: rgba(0,0,0,0.7);
-            border: none;
-            color: #ccc;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            backdrop-filter: blur(4px);
-        }
-        .icon-btn:hover { background: #fff; color: #000; transform: scale(1.1); }
-        .star-btn.is-saved { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
-        .star-btn.is-saved:hover { background: #fff; color: var(--gold); }
-
-        .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
-
-        .source-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--accent);
-            margin-bottom: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .date-display { color: #666; font-weight: normal; }
-        .is-fresh .date-display { color: var(--green); font-weight: bold; }
-
-        .headline {
-            font-size: 1rem;
-            font-weight: 700;
-            margin: 0 0 10px 0;
-            line-height: 1.4;
-            color: #fff;
-        }
-        .headline a { text-decoration: none; color: inherit; }
-        .headline a:hover { color: var(--accent); }
-
-        .snippet {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* --- LIST VIEW OVERRIDES --- */
-        .list-view #news-grid {
-            grid-template-columns: 1fr; /* Single column */
-            max-width: 1000px;
-        }
-
-        .list-view .news-card {
-            flex-direction: row;
-            height: 120px;
-            align-items: center;
-        }
-
-        .list-view .card-image {
-            width: 150px;
-            height: 100%;
-            flex-shrink: 0;
-        }
-        
-        .list-view .action-group {
-            top: 5px; right: 5px; bottom: auto;
-        }
-        .list-view .icon-btn { width: 24px; height: 24px; font-size: 0.8rem; }
-
-        .list-view .card-content {
-            padding: 10px 20px;
-            justify-content: center;
-        }
-        
-        .list-view .snippet {
-            display: -webkit-box;
-            -webkit-line-clamp: 1; /* Only 1 line of text in list mode */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            font-size: 0.8rem;
-        }
-        
-        .list-view .headline { font-size: 1.1rem; margin-bottom: 5px; }
-
-        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="header-top">
-        <div class="title-group">
-            <h1>Nurin's Little Helper <span id="clock">Initializing...</span></h1>
-        </div>
-        
-        <div class="tools-group">
-            <input type="text" id="search-input" placeholder="Keyword Search (e.g., AI, Cancer)..." onkeyup="handleSearch()">
-            
-            <button class="tool-btn" onclick="toggleView()" title="Toggle List/Grid View">
-                <span id="view-icon">☰ List</span>
-            </button>
-            
-            <button class="tool-btn" onclick="init()" title="Refresh Feeds">↻</button>
-        </div>
-    </div>
-    
-    <div class="nav-bar">
-        <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 TRENDING</button>
-        <button class="nav-btn active" onclick="filterCategory('all', this)">All Feeds</button>
-        <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
-        <button class="nav-btn" onclick="filterCategory('health', this)">Health</button>
-        <button class="nav-btn" onclick="filterCategory('environment', this)">Environment</button>
-        <button class="nav-btn" onclick="filterCategory('physics', this)">Physics</button>
-        <button class="nav-btn" onclick="filterCategory('tech', this)">Tech</button>
-        <button class="nav-btn saved-tab" onclick="showFavorites(this)">★ Saved</button>
-    </div>
-</header>
-
-<div id="news-container">
-    <div id="loading">Scanning global science wires...</div>
-    <div id="news-grid"></div>
-</div>
-
-<div id="toast">Link copied!</div>
-
 <script>
-    // --- ICONS (SVG) ---
-    const iconCopy = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
-    const iconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+/* ===============================
+   PERFORMANCE + STATE
+================================ */
+const MAX_INITIAL_RENDER = 40;
+const FEED_TIMEOUT = 6000; // ms
+const SESSION_SEEN = JSON.parse(sessionStorage.getItem('seenLinks')) || [];
+let feedErrors = 0;
 
-    // --- SOURCES ---
-    const feeds = [
-        // TRENDING
-        { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
-        { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
-        { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
-        { category: "trending", name: "Scientific American", url: "http://rss.sciam.com/ScientificAmerican-Global" },
-        { category: "trending", name: "Wired", url: "https://www.wired.com/feed/category/science/latest/rss" },
-        { category: "trending", name: "Futurism", url: "https://futurism.com/feed" },
-        // SPACE
-        { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
-        { category: "space", name: "NASA Image", url: "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" },
-        { category: "space", name: "ESA", url: "https://www.esa.int/content/search/rss/feed/topic/1585" },
-        { category: "space", name: "Universe Today", url: "https://www.universetoday.com/feed/" },
-        { category: "space", name: "EarthSky", url: "https://earthsky.org/feed" },
-        // HEALTH
-        { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
-        { category: "health", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
-        { category: "health", name: "Stat News", url: "https://www.statnews.com/feed/" },
-        { category: "health", name: "NIH Research", url: "https://www.nih.gov/news-events/feed.xml" },
-        { category: "health", name: "Medical Xpress", url: "https://medicalxpress.com/rss-feed/" },
-        // ENV
-        { category: "environment", name: "Treehugger", url: "https://www.treehugger.com/feeds/latest.xml" },
-        { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
-        { category: "environment", name: "EcoWatch", url: "https://www.ecowatch.com/feeds/feed.rss" },
-        { category: "environment", name: "Carbon Brief", url: "https://www.carbonbrief.org/feed" },
-        // PHYSICS
-        { category: "physics", name: "Quanta", url: "https://api.quantamagazine.org/feed/" },
-        { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" },
-        { category: "physics", name: "APS Physics", url: "https://physics.aps.org/feed.rss" },
-        { category: "physics", name: "Symmetry", url: "https://www.symmetrymagazine.org/feed" },
-        // TECH
-        { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
-        { category: "tech", name: "MIT Tech Review", url: "https://www.technologyreview.com/feed/" },
-        { category: "tech", name: "The Verge", url: "https://www.theverge.com/rss/science/index.xml" },
-        { category: "tech", name: "Ars Technica", url: "https://feeds.arstechnica.com/arstechnica/index" }
-    ];
+/* ===============================
+   SOURCE WEIGHTING
+================================ */
+const SOURCE_WEIGHT = {
+  "Quanta": 5,
+  "APS Physics": 5,
+  "Symmetry": 5,
+  "Carbon Brief": 5,
+  "Stat News": 4,
+  "MIT Tech Review": 4,
+  "BBC Science": 4,
+  "Scientific American": 4,
+  "ScienceAlert": 3,
+  "Phys.org": 3,
+  "Futurism": 2
+};
 
-    const DAYS_TO_SHOW = 7;
-    const FRESH_HOURS = 12; // Highlights news newer than 12 hours
+/* ===============================
+   PRIMARY SOURCE DETECTION
+================================ */
+function isPrimarySource(link) {
+  return /nature\.com|science\.org|arxiv\.org|nih\.gov|doi\.org/i.test(link);
+}
 
-    let allArticles = []; 
-    let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
-    let currentView = 'all'; 
-    let isListView = false; // State for List/Grid Toggle
+/* ===============================
+   TRENDING LOGIC
+================================ */
+function computeTrending(articles) {
+  const keywordMap = {};
+  articles.forEach(a => {
+    const words = a.title.toLowerCase().split(/\W+/);
+    words.forEach(w => {
+      if (w.length < 5) return;
+      keywordMap[w] = (keywordMap[w] || 0) + 1;
+    });
+  });
 
-    // Clock
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    }, 1000);
+  return articles
+    .map(a => {
+      const score = a.title
+        .toLowerCase()
+        .split(/\W+/)
+        .reduce((s, w) => s + (keywordMap[w] || 0), 0);
+      return { ...a, trendScore: score };
+    })
+    .sort((a, b) => b.trendScore - a.trendScore)
+    .slice(0, 50);
+}
 
-    // --- ACTIONS ---
-    function copyLink(link) {
-        navigator.clipboard.writeText(link).then(() => showToast("Link copied!"));
-    }
+/* ===============================
+   FETCH ENGINE (FASTER)
+================================ */
+async function fetchFeed(feed) {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), FEED_TIMEOUT);
 
-    function googleSearch(title) {
-        // Opens Google News search in new tab
-        const url = `https://news.google.com/search?q=${encodeURIComponent(title)}`;
-        window.open(url, '_blank');
-    }
+  try {
+    const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}`;
+    const res = await fetch(proxy, { signal: controller.signal });
+    const xml = await res.text();
+    const data = new DOMParser().parseFromString(xml, "text/xml");
 
-    function toggleFavorite(link) {
-        let article = allArticles.find(a => a.link === link);
-        if (!article) article = favorites.find(a => a.link === link);
-        if (!article) return;
+    const items = [...data.querySelectorAll("item, entry")];
+    const cutoff = new Date(Date.now() - 7 * 86400000);
 
-        const index = favorites.findIndex(f => f.link === link);
-        if (index > -1) { favorites.splice(index, 1); } 
-        else { favorites.push(article); }
+    return items.map(item => {
+      const pub = item.querySelector("pubDate, published");
+      if (!pub) return null;
+      const time = new Date(pub.textContent);
+      if (time < cutoff) return null;
 
-        localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
+      const link = item.querySelector("link")?.textContent ||
+                   item.querySelector("link")?.getAttribute("href");
 
-        if (currentView === 'saved') renderGrid(favorites);
-        else renderGrid(getFilteredAndSearchedList());
-    }
+      return {
+        category: feed.category,
+        source: feed.name,
+        title: item.querySelector("title")?.textContent || "",
+        link,
+        time,
+        desc: (item.querySelector("description, summary, content")?.textContent || "")
+              .replace(/<[^>]+>/g, "")
+              .slice(0, 160) + "...",
+        img: null
+      };
+    }).filter(Boolean);
+  } catch {
+    feedErrors++;
+    return [];
+  }
+}
 
-    function showToast(msg) {
-        var x = document.getElementById("toast");
-        x.innerText = msg;
-        x.className = "show";
-        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-    }
+/* ===============================
+   INIT (INCREMENTAL RENDER)
+================================ */
+async function init() {
+  document.getElementById('loading').innerText = "Loading feeds…";
+  allArticles = [];
+  feedErrors = 0;
 
-    // --- VIEW TOGGLE ---
-    function toggleView() {
-        isListView = !isListView;
-        const container = document.getElementById('news-container');
-        const icon = document.getElementById('view-icon');
-        
-        if (isListView) {
-            container.classList.add('list-view');
-            icon.innerText = "▦ Grid";
-        } else {
-            container.classList.remove('list-view');
-            icon.innerText = "☰ List";
-        }
-    }
+  const feedPromises = feeds.map(feed =>
+    fetchFeed(feed).then(items => {
+      allArticles.push(...items);
+      renderPartial();
+    })
+  );
 
-    // --- SEARCH & FILTER ---
-    function handleSearch() {
-        // Trigger re-render with search term
-        if(currentView === 'saved') renderGrid(favorites);
-        else renderGrid(getFilteredAndSearchedList());
-    }
+  await Promise.all(feedPromises);
 
-    function getFilteredAndSearchedList() {
-        let list = (currentView === 'all') ? allArticles : allArticles.filter(a => a.category === currentView);
-        
-        // Search logic
-        const term = document.getElementById('search-input').value.toLowerCase();
-        if (term) {
-            list = list.filter(a => 
-                a.title.toLowerCase().includes(term) || 
-                a.desc.toLowerCase().includes(term)
-            );
-        }
-        return list;
-    }
+  allArticles.sort((a, b) => {
+    const wA = SOURCE_WEIGHT[a.source] || 1;
+    const wB = SOURCE_WEIGHT[b.source] || 1;
+    return (b.time - a.time) + (wB - wA) * 3600000;
+  });
 
-    // --- FETCH ENGINE ---
-    async function fetchFeed(feed) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
-        try {
-            const res = await fetch(proxyUrl);
-            const str = await res.text();
-            const data = new window.DOMParser().parseFromString(str, "text/xml");
-            const items = Array.from(data.querySelectorAll("item, entry"));
-            const cutoffDate = new Date();
-            cutoffDate.setDate(cutoffDate.getDate() - DAYS_TO_SHOW);
+  document.getElementById('loading').style.display = "none";
 
-            return items.map(item => {
-                const pubDateNode = item.querySelector("pubDate, published");
-                if (!pubDateNode) return null;
-                const pubDate = new Date(pubDateNode.textContent);
-                if (pubDate < cutoffDate) return null;
+  if (feedErrors) {
+    showToast(`${feedErrors} feeds failed to load`);
+  }
+}
 
-                let img = null;
-                const media = item.querySelector("content, enclosure");
-                if (media && media.getAttribute("url")) img = media.getAttribute("url");
-                if (!img && item.getElementsByTagName('media:content').length > 0) {
-                     img = item.getElementsByTagName('media:content')[0].getAttribute('url');
-                }
-                if (!img) {
-                    const descHtml = item.querySelector("description, summary, content")?.textContent || "";
-                    const div = document.createElement('div');
-                    div.innerHTML = descHtml;
-                    const foundImg = div.querySelector('img');
-                    if (foundImg && foundImg.width > 1) img = foundImg.src;
-                }
+/* ===============================
+   PARTIAL RENDER
+================================ */
+function renderPartial() {
+  renderGrid(allArticles.slice(0, MAX_INITIAL_RENDER));
+}
 
-                return {
-                    category: feed.category,
-                    source: feed.name,
-                    title: item.querySelector("title").textContent,
-                    link: item.querySelector("link").textContent || item.querySelector("link").getAttribute("href"),
-                    time: pubDate,
-                    desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 150) + "...",
-                    img: img
-                };
-            }).filter(item => item !== null);
-        } catch (e) { return []; }
-    }
+/* ===============================
+   ANGLE BUILDER
+================================ */
+function buildAngle(news) {
+  const text = `
+What happened:
+${news.title}
 
-    async function init() {
-        const loading = document.getElementById('loading');
-        loading.style.display = 'block';
-        document.getElementById('news-grid').innerHTML = '';
+Why it matters:
+[Why this changes understanding, policy, or impact]
 
-        const promises = feeds.map(f => fetchFeed(f));
-        const results = await Promise.all(promises);
-        
-        allArticles = results.flat().sort((a, b) => b.time - a.time);
-        loading.style.display = 'none';
-        
-        renderGrid(allArticles);
-    }
+What’s new:
+[What is genuinely new here]
 
-    // --- RENDER ---
-    function renderGrid(articles) {
-        const grid = document.getElementById('news-grid');
-        grid.innerHTML = '';
-        const now = new Date();
+Source:
+${news.source}
+${news.link}
+`;
+  navigator.clipboard.writeText(text);
+  showToast("Angle template copied");
+}
 
-        // Re-apply search filter if we just switched tabs
-        const term = document.getElementById('search-input').value.toLowerCase();
-        if (term && currentView !== 'saved') { // If searching on saved tab, handled by logic above, otherwise refilter
-             // Actually getFilteredAndSearchedList handles this, but if we pass 'favorites' specifically:
-             if(currentView === 'saved') {
-                 articles = articles.filter(a => a.title.toLowerCase().includes(term));
-             }
-        }
+/* ===============================
+   RENDER
+================================ */
+function renderGrid(articles) {
+  const grid = document.getElementById('news-grid');
+  grid.innerHTML = "";
 
-        if (articles.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No matches found.</div>`;
-            return;
-        }
+  const now = Date.now();
 
-        articles.forEach(news => {
-            const card = document.createElement('div');
-            
-            // Freshness Check
-            const hoursOld = (now - news.time) / (1000 * 60 * 60);
-            const isFresh = hoursOld < FRESH_HOURS;
-            
-            card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
-            
-            const imgHtml = news.img 
-                ? `background-image: url('${news.img}')`
-                : `background: linear-gradient(45deg, #1c1c1c, #2a2a2a); display:flex; align-items:center; justify-content:center; color:#444; content:'No Image'`;
+  articles.forEach(news => {
+    const hoursOld = (now - news.time) / 3600000;
+    const fresh = hoursOld < 12;
+    const seen = SESSION_SEEN.includes(news.link);
 
-            const isFav = favorites.some(f => f.link === news.link);
-            const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            let badgeColor = getCatColor(news.category);
-            if(news.category === 'trending') badgeColor = '#f43f5e';
+    const card = document.createElement('div');
+    card.className = `news-card ${fresh ? 'is-fresh' : ''}`;
+    if (seen) card.style.opacity = "0.6";
 
-            // Sanitize title for search query
-            const safeTitle = news.title.replace(/'/g, "\\'");
+    card.innerHTML = `
+      <div class="card-image">
+        ${isPrimarySource(news.link) ? `<div class="fresh-badge">PRIMARY</div>` : ""}
+        <div class="category-badge">${news.category}</div>
 
-            card.innerHTML = `
-                <div class="card-image" style="${imgHtml}">
-                    <div class="fresh-badge">NEW</div>
-                    <div class="category-badge" style="background:${badgeColor}">${news.category}</div>
-                    
-                    <div class="action-group">
-                        <button class="icon-btn" onclick="googleSearch('${safeTitle}')" title="Fact Check on Google News">${iconSearch}</button>
-                        <button class="icon-btn" onclick="copyLink('${news.link}')" title="Copy Link">${iconCopy}</button>
-                        <button class="icon-btn star-btn ${isFav ? 'is-saved' : ''}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <div class="source-row">
-                        <span>${news.source}</span>
-                        <span class="date-display">${dateStr}</span>
-                    </div>
-                    <div class="headline"><a href="${news.link}" target="_blank">${news.title}</a></div>
-                    <div class="snippet">${news.desc}</div>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
+        <div class="action-group">
+          <button class="icon-btn" onclick="buildAngle(${JSON.stringify(news).replace(/"/g, '&quot;')})">📝</button>
+          <button class="icon-btn" onclick="copyLink('${news.link}')">⧉</button>
+          <button class="icon-btn star-btn ${favorites.some(f=>f.link===news.link)?'is-saved':''}" onclick="toggleFavorite('${news.link}')">★</button>
+        </div>
+      </div>
 
-    function filterCategory(cat, btnElement) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
-        currentView = cat;
-        renderGrid(getFilteredAndSearchedList());
-    }
+      <div class="card-content">
+        <div class="source-row">
+          <span>${news.source}</span>
+          <span>${new Date(news.time).toDateString()}</span>
+        </div>
+        <div class="headline">
+          <a href="${news.link}" target="_blank" onclick="markSeen('${news.link}')">${news.title}</a>
+        </div>
+        <div class="snippet">${news.desc}</div>
+      </div>
+    `;
 
-    function showFavorites(btnElement) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btnElement.classList.add('active');
-        currentView = 'saved';
-        // Sort favorites by date
-        const sortedFavs = [...favorites].sort((a,b) => new Date(b.time) - new Date(a.time));
-        renderGrid(sortedFavs);
-    }
+    grid.appendChild(card);
+  });
+}
 
-    function getCatColor(cat) {
-        if(cat === 'space') return '#8b5cf6'; 
-        if(cat === 'health') return '#ef4444'; 
-        if(cat === 'environment') return '#10b981'; 
-        if(cat === 'physics') return '#f59e0b'; 
-        if(cat === 'tech') return '#3b82f6'; 
-        return '#666';
-    }
+/* ===============================
+   SEEN TRACKING
+================================ */
+function markSeen(link) {
+  if (!SESSION_SEEN.includes(link)) {
+    SESSION_SEEN.push(link);
+    sessionStorage.setItem('seenLinks', JSON.stringify(SESSION_SEEN));
+  }
+}
 
-    init();
-
+/* ===============================
+   START
+================================ */
+init();
 </script>
-</body>
-</html>

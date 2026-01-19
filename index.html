@@ -320,10 +320,22 @@
 
     // --- BASE SOURCES ---
     const defaultFeeds = [
-        // --- ADDED NEW SOURCES HERE ---
+        // --- YOUR REQUESTED ADDITIONS ---
+        { category: "tech", name: "New Atlas", url: "https://newatlas.com/feed" },
+        { category: "trending", name: "Sci.News", url: "https://www.sci.news/feed" },
+        { category: "trending", name: "PBS Science", url: "https://www.pbs.org/newshour/feeds/rss/science" },
+        { category: "trending", name: "CNN Science", url: "http://rss.cnn.com/rss/edition_space.rss" }, // CNN Space/Science
+        { category: "trending", name: "NBC Science", url: "https://feeds.nbcnews.com/nbcnews/public/science" },
+        { category: "trending", name: "Live Science", url: "https://www.livescience.com/feeds/all" },
+        { category: "trending", name: "Science News Explores", url: "https://www.snexplores.org/feed" },
+        { category: "trending", name: "Science News", url: "https://www.sciencenews.org/feed" },
+        { category: "trending", name: "EurekAlert", url: "https://www.eurekalert.org/rss/headlines.xml" },
+        { category: "health", name: "The Scientist", url: "https://www.the-scientist.com/feed" },
+        // Note: SciCentral omitted as it does not provide a functional RSS feed for this type of reader.
+        
+        // --- EXISTING SOURCES ---
         { category: "trending", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/top_news.xml" },
         { category: "trending", name: "SciTechDaily", url: "https://scitechdaily.com/feed/" },
-        // ------------------------------
         { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
         { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
         { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
@@ -551,14 +563,12 @@
         } catch (e) { return []; }
     }
 
-    // --- THE MISSING FUNCTION IS ADDED BELOW ---
     function showFavorites(btnElement) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         currentView = 'saved';
         renderGrid(favorites);
     }
-    // ------------------------------------------
 
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -584,7 +594,6 @@
         document.getElementById('news-grid').innerHTML = '';
         const progressBar = document.getElementById('progress-bar');
         
-        // --- FIX: CLEAR THE LIST AND CHECK FOR DUPLICATES ---
         allArticles = []; 
 
         let completed = 0;
@@ -630,9 +639,6 @@
         }
 
         if (articles.length === 0) {
-            // Don't show empty state if loading isn't finished? 
-            // Actually, with progressive loading, we might show empty briefly. 
-            // We can check if 'allArticles' has length.
             if(allArticles.length === 0) return; // Still loading first batch
             grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#999; margin-top:50px;">No stories found here.</div>`;
             return;

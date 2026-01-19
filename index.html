@@ -12,6 +12,7 @@
             --text-muted: #a0a0a0;
             --accent: #00d4ff; 
             --active-nav: #2563eb;
+            --gold: #ffd700;
         }
 
         body {
@@ -68,6 +69,17 @@
             color: #fff;
         }
 
+        /* Special style for the Saved button */
+        .nav-btn.saved-tab {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            background: transparent;
+        }
+        .nav-btn.saved-tab.active {
+            background: var(--gold);
+            color: #000;
+        }
+
         .refresh-btn {
             background-color: var(--accent);
             color: #000;
@@ -100,6 +112,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s;
+            position: relative;
         }
         
         .news-card:hover { transform: translateY(-2px); border-color: #555; }
@@ -123,6 +136,33 @@
             border-radius: 4px;
             text-transform: uppercase;
             font-weight: bold;
+        }
+
+        /* STAR BUTTON STYLES */
+        .star-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .star-btn:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
+        
+        /* Active star state (Yellow) */
+        .star-btn.is-saved {
+            color: var(--gold);
+            text-shadow: 0 0 5px var(--gold);
         }
 
         .timestamp {
@@ -186,6 +226,7 @@
         <button class="nav-btn" onclick="filterCategory('environment', this)">ENVIRONMENT</button>
         <button class="nav-btn" onclick="filterCategory('physics', this)">PHYSICS & MATH</button>
         <button class="nav-btn" onclick="filterCategory('tech', this)">TECH</button>
+        <button class="nav-btn saved-tab" onclick="showFavorites(this)">★ SAVED</button>
     </div>
 </header>
 
@@ -195,52 +236,77 @@
 </div>
 
 <script>
-    // --- CONFIGURATION: SOURCES & CATEGORIES ---
+    // --- CONFIGURATION ---
     const feeds = [
-        // SPACE
         { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
         { category: "space", name: "NASA Breaking", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" },
-        
-        // HEALTH & MED
         { category: "health", name: "ScienceDaily (Health)", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
         { category: "health", name: "Medical Xpress", url: "https://medicalxpress.com/rss-feed/" },
         { category: "health", name: "NIH News", url: "https://www.nih.gov/news-events/feed.xml" },
-
-        // ENVIRONMENT
         { category: "environment", name: "ScienceDaily (Climate)", url: "https://www.sciencedaily.com/rss/earth_climate.xml" },
         { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
-
-        // PHYSICS & MATH
         { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" },
         { category: "physics", name: "ScienceDaily (Math)", url: "https://www.sciencedaily.com/rss/computers_math/mathematics.xml" },
         { category: "physics", name: "APS Physics", url: "https://physics.aps.org/feed.rss" },
-
-        // TECH
         { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
         { category: "tech", name: "MIT Tech Review", url: "https://www.technologyreview.com/feed/" },
         { category: "tech", name: "The Verge (Science)", url: "https://www.theverge.com/rss/science/index.xml" }
     ];
 
-    let allArticles = []; // Store fetched articles here
-    const DAYS_TO_SHOW = 7; // Configuration: How many days back?
+    const DAYS_TO_SHOW = 7;
+    let allArticles = []; 
+    let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
+    let currentView = 'all'; // tracks what tab we are on
 
-    // Time display
+    // Clock
     setInterval(() => {
         document.getElementById('clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
-    // Fetch Logic
-    async function fetchFeed(feed) {
-        // Cache-busting URL
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
+    // --- FAVORITES LOGIC ---
+    function toggleFavorite(link) {
+        // Find the article object either in the main list or the favorites list
+        let article = allArticles.find(a => a.link === link);
         
+        // If it's not in the main list (e.g. looking at Saved tab only), find it in favorites
+        if (!article) article = favorites.find(a => a.link === link);
+        if (!article) return; // Should not happen
+
+        // Check if already saved
+        const index = favorites.findIndex(f => f.link === link);
+
+        if (index > -1) {
+            // Remove it
+            favorites.splice(index, 1);
+        } else {
+            // Add it
+            favorites.push(article);
+        }
+
+        // Save to browser memory
+        localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
+
+        // Re-render to update the star icon color
+        if (currentView === 'saved') {
+            renderGrid(favorites); // If looking at saved, refresh grid to remove item
+        } else {
+            renderGrid(getCurrentFilteredList()); // Otherwise just refresh the stars
+        }
+    }
+
+    function isSaved(link) {
+        return favorites.some(f => f.link === link);
+    }
+
+    // --- FETCH LOGIC ---
+    async function fetchFeed(feed) {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
             const res = await fetch(proxyUrl);
             const str = await res.text();
             const data = new window.DOMParser().parseFromString(str, "text/xml");
             const items = Array.from(data.querySelectorAll("item, entry"));
             
-            // Calculate cutoff date (7 days ago)
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - DAYS_TO_SHOW);
 
@@ -249,17 +315,12 @@
                 if (!pubDateNode) return null;
                 const pubDate = new Date(pubDateNode.textContent);
 
-                // DATE FILTER: Is it newer than the cutoff date?
-                if (pubDate < cutoffDate) {
-                    return null;
-                }
+                if (pubDate < cutoffDate) return null;
 
-                // Image Extraction
                 let img = null;
                 const media = item.querySelector("content, enclosure");
                 if (media && media.getAttribute("url")) img = media.getAttribute("url");
                 if (!img) {
-                    // Try to find image in description HTML
                     const descHtml = item.querySelector("description, summary, content")?.textContent || "";
                     const div = document.createElement('div');
                     div.innerHTML = descHtml;
@@ -276,48 +337,39 @@
                     desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 120) + "...",
                     img: img
                 };
-            }).filter(item => item !== null); // Remove nulls (old items)
+            }).filter(item => item !== null);
 
-        } catch (e) {
-            console.error(e);
-            return [];
-        }
+        } catch (e) { return []; }
     }
 
     async function init() {
-        const grid = document.getElementById('news-grid');
         const loading = document.getElementById('loading');
-        
-        grid.innerHTML = '';
         loading.style.display = 'block';
         loading.innerHTML = `Scanning wires for the last ${DAYS_TO_SHOW} days...`;
+        document.getElementById('news-grid').innerHTML = '';
 
         const promises = feeds.map(f => fetchFeed(f));
         const results = await Promise.all(promises);
         
-        // Flatten and Sort
         allArticles = results.flat().sort((a, b) => b.time - a.time);
-        
         loading.style.display = 'none';
         
-        // Initial Render (Show All)
-        renderNews('all');
+        // Render All by default
+        currentView = 'all';
+        renderGrid(allArticles);
     }
 
-    function renderNews(filterCat) {
+    // --- RENDER LOGIC ---
+    function renderGrid(articles) {
         const grid = document.getElementById('news-grid');
         grid.innerHTML = '';
 
-        const filtered = filterCat === 'all' 
-            ? allArticles 
-            : allArticles.filter(a => a.category === filterCat);
-
-        if (filtered.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No news found for this category in the last 7 days.</div>`;
+        if (articles.length === 0) {
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No articles found here.</div>`;
             return;
         }
 
-        filtered.forEach(news => {
+        articles.forEach(news => {
             const card = document.createElement('div');
             card.className = 'news-card';
             
@@ -325,11 +377,13 @@
                 ? `background-image: url('${news.img}')`
                 : `background: linear-gradient(45deg, #222, #333); display:flex; align-items:center; justify-content:center; color:#555; content:'No Image'`;
 
-            // Format date carefully (e.g. "Mon, Jan 15")
-            const dateStr = news.time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            // Check if this specific card is favorited
+            const savedClass = isSaved(news.link) ? 'is-saved' : '';
+            const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             
             card.innerHTML = `
                 <div class="card-image" style="${imgHtml}">
+                    <button class="star-btn ${savedClass}" onclick="toggleFavorite('${news.link}')">★</button>
                     <div class="category-badge" style="background:${getCatColor(news.category)}">${news.category}</div>
                     <div class="timestamp">${dateStr}</div>
                 </div>
@@ -345,21 +399,37 @@
         });
     }
 
+    // --- FILTER HANDLERS ---
     function filterCategory(cat, btnElement) {
-        // Update UI buttons
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         
-        // Render
-        renderNews(cat);
+        currentView = cat;
+        renderGrid(getCurrentFilteredList());
+    }
+
+    function showFavorites(btnElement) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        currentView = 'saved';
+        // We render the favorites array directly
+        // We sort them so newest saved items (by publish date) are at top
+        const sortedFavs = [...favorites].sort((a,b) => new Date(b.time) - new Date(a.time));
+        renderGrid(sortedFavs);
+    }
+
+    function getCurrentFilteredList() {
+        if (currentView === 'all') return allArticles;
+        return allArticles.filter(a => a.category === currentView);
     }
 
     function getCatColor(cat) {
-        if(cat === 'space') return '#8b5cf6'; // purple
-        if(cat === 'health') return '#ef4444'; // red
-        if(cat === 'environment') return '#10b981'; // green
-        if(cat === 'physics') return '#f59e0b'; // orange
-        if(cat === 'tech') return '#3b82f6'; // blue
+        if(cat === 'space') return '#8b5cf6'; 
+        if(cat === 'health') return '#ef4444'; 
+        if(cat === 'environment') return '#10b981'; 
+        if(cat === 'physics') return '#f59e0b'; 
+        if(cat === 'tech') return '#3b82f6'; 
         return '#666';
     }
 

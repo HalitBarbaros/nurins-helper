@@ -12,18 +12,13 @@
             --card-bg: #ffffff;       
             --text-main: #121212;     
             --text-muted: #666666;    
-            
             --accent: #c0a080;        
             --accent-hover: #333333;  
-            
             --viral: #b91c1c;         
             --green: #047857;         
             --gold: #d97706;          
-            
             --border: #e2e2e2;
             --shadow: rgba(0, 0, 0, 0.06);
-            
-            /* TYPOGRAPHY - NYT STYLE */
             --font-serif: "Cheltenham", "Georgia", "Times New Roman", serif; 
             --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
@@ -65,6 +60,15 @@
 
         .tools-group { display: flex; gap: 10px; align-items: center; flex-grow: 1; justify-content: flex-end; }
 
+        /* LOADING BAR */
+        #progress-bar-container {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: transparent;
+        }
+        #progress-bar {
+            height: 100%; background: #000; width: 0%; transition: width 0.2s;
+        }
+
+        /* INPUTS & BUTTONS */
         #search-input {
             background: #fff; border: 1px solid #ccc; color: var(--text-main); padding: 8px 18px;
             border-radius: 4px; font-size: 0.9rem; width: 220px; outline: none; transition: all 0.2s;
@@ -191,7 +195,7 @@
         
         .headline { 
             font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.3; color: #000; 
-            font-family: var(--font-serif); /* NYT FONT */
+            font-family: var(--font-serif);
         }
         .snippet { font-size: 0.95rem; color: #555; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-family: var(--font-serif); }
 
@@ -263,13 +267,14 @@
         </div>
         
         <div class="tools-group">
-            <input type="text" id="search-input" placeholder="Search news..." onkeyup="handleSearch()">
+            <input type="text" id="search-input" placeholder="Search news..." oninput="handleSearch()">
             
             <button class="tool-btn" onclick="toggleView()" title="View Mode"><span id="view-icon">☰ List</span></button>
             <button class="tool-btn" onclick="toggleAddFeed()" title="Add Custom Feed">➕ Source</button>
             <button class="tool-btn" onclick="init()" title="Refresh">↻</button>
         </div>
     </div>
+    <div id="progress-bar-container"><div id="progress-bar"></div></div>
     
     <div class="nav-bar">
         <button class="nav-btn briefing-tab" onclick="filterCategory('briefing', this)">☕ Briefing</button>
@@ -301,7 +306,7 @@
 </div>
 
 <div id="news-container">
-    <div id="loading">Gathering intelligence...</div>
+    <div id="loading">Connecting to wires...</div>
     <div id="news-grid"></div>
 </div>
 
@@ -366,6 +371,7 @@
         document.getElementById('modal-desc').innerText = article.desc; 
         
         document.getElementById('modal-link-btn').href = article.link;
+        // Make sure we pass a function reference, don't execute immediately
         document.getElementById('modal-save-btn').onclick = function() { toggleFavorite(article.link); showToast("Saved!"); };
         
         document.getElementById('modal-overlay').classList.add('open');
@@ -414,8 +420,8 @@
         let article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
         if(!article) return;
         
-        const text = `${article.title} (${article.source}) - ${article.link}`;
-        navigator.clipboard.writeText(text).then(() => showToast("Story copied for pitch!"));
+        const text = `${article.title} (${article.source}) - [Link: ${article.link}]`;
+        navigator.clipboard.writeText(text).then(() => showToast("Pitch format copied!"));
     }
 
     function toggleFavorite(link) {
@@ -461,7 +467,7 @@
 
         const term = document.getElementById('search-input').value.toLowerCase();
         if (term) {
-            list = list.filter(a => a.title.toLowerCase().includes(term));
+            list = list.filter(a => a.title.toLowerCase().includes(term) || a.desc.toLowerCase().includes(term) || a.source.toLowerCase().includes(term));
         }
         return list;
     }
@@ -476,11 +482,33 @@
         return list;
     }
 
+    // --- ROBUST FETCH ENGINE ---
+    // Try primary proxy, if fail, try fallback
+    async function fetchWithFallback(url) {
+        const proxies = [
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`,
+            `https://corsproxy.io/?${encodeURIComponent(url)}`
+        ];
+
+        for (const proxy of proxies) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+                const res = await fetch(proxy, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) return await res.text();
+            } catch (e) {
+                // Continue to next proxy
+            }
+        }
+        return null; // Failed all
+    }
+
     async function fetchFeed(feed) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
-            const res = await fetch(proxyUrl);
-            const str = await res.text();
+            const str = await fetchWithFallback(feed.url);
+            if (!str) return [];
+
             const data = new window.DOMParser().parseFromString(str, "text/xml");
             const items = Array.from(data.querySelectorAll("item, entry"));
             const cutoffDate = new Date();
@@ -496,7 +524,7 @@
                 const media = item.querySelector("content, enclosure");
                 if (media && media.getAttribute("url")) img = media.getAttribute("url");
                 if (!img && item.getElementsByTagName('media:content').length > 0) {
-                     img = item.getElementsByTagName('media:content')[0].getAttribute('url');
+                      img = item.getElementsByTagName('media:content')[0].getAttribute('url');
                 }
                 if (!img) {
                     const descHtml = item.querySelector("description, summary, content")?.textContent || "";
@@ -518,6 +546,15 @@
             }).filter(item => item !== null);
         } catch (e) { return []; }
     }
+
+    // --- THE MISSING FUNCTION IS ADDED BELOW ---
+    function showFavorites(btnElement) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        currentView = 'saved';
+        renderGrid(favorites);
+    }
+    // ------------------------------------------
 
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -541,14 +578,28 @@
         const loading = document.getElementById('loading');
         loading.style.display = 'block';
         document.getElementById('news-grid').innerHTML = '';
+        const progressBar = document.getElementById('progress-bar');
 
-        const promises = activeFeeds.map(f => fetchFeed(f));
-        const results = await Promise.all(promises);
-        
-        allArticles = results.flat().sort((a, b) => b.time - a.time);
-        loading.style.display = 'none';
-        
-        renderGrid(allArticles);
+        let completed = 0;
+        const total = activeFeeds.length;
+
+        // Progressive Loading
+        activeFeeds.forEach(feed => {
+            fetchFeed(feed).then(items => {
+                if(items.length > 0) {
+                    allArticles = allArticles.concat(items);
+                    allArticles.sort((a,b) => b.time - a.time);
+                    // Debounce rendering slightly? No, immediate is snappier
+                    renderGrid(getFilteredAndSearchedList());
+                }
+                completed++;
+                progressBar.style.width = `${(completed/total)*100}%`;
+                if(completed === total) {
+                    loading.style.display = 'none';
+                    setTimeout(() => { progressBar.style.width = '0%'; }, 500);
+                }
+            });
+        });
     }
 
     function renderGrid(articles) {
@@ -566,6 +617,10 @@
         }
 
         if (articles.length === 0) {
+            // Don't show empty state if loading isn't finished? 
+            // Actually, with progressive loading, we might show empty briefly. 
+            // We can check if 'allArticles' has length.
+            if(allArticles.length === 0) return; // Still loading first batch
             grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#999; margin-top:50px;">No stories found here.</div>`;
             return;
         }
@@ -579,6 +634,7 @@
             
             card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
             
+            // Make entire card click to open modal
             card.onclick = function(e) {
                 if(e.target.closest('.action-group')) return;
                 openArticle(news.link);
@@ -651,4 +707,3 @@
 </script>
 </body>
 </html>
-

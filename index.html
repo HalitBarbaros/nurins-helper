@@ -6,13 +6,14 @@
     <title>Nurin's Little Helper</title>
     <style>
         :root {
-            --bg-color: #0f0f13; /* Darker, sleeker background */
+            --bg-color: #0f0f13;
             --card-bg: #1e1e24;
             --text-main: #e0e0e0;
             --text-muted: #9ca3af;
-            --accent: #38bdf8; /* Sky blue */
-            --viral: #f43f5e; /* Hot Pink for Trending */
+            --accent: #38bdf8;
+            --viral: #f43f5e;
             --gold: #fbbf24;
+            --green: #10b981; /* New Action Color */
             --nav-active: #2563eb;
         }
 
@@ -49,9 +50,9 @@
             gap: 8px;
             overflow-x: auto;
             padding-bottom: 5px;
-            scrollbar-width: none; /* Hide scrollbar Firefox */
+            scrollbar-width: none;
         }
-        .nav-bar::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome */
+        .nav-bar::-webkit-scrollbar { display: none; }
 
         .nav-btn {
             background: #27272a;
@@ -74,7 +75,6 @@
             border-color: var(--nav-active);
         }
 
-        /* Special Styles for special tabs */
         .nav-btn.trending-tab.active { background: var(--viral); border-color: var(--viral); }
         .nav-btn.saved-tab.active { background: var(--gold); border-color: var(--gold); color: #000; }
         
@@ -91,6 +91,32 @@
             transition: 0.2s;
         }
         .refresh-btn:hover { background: var(--accent); color: #000; }
+
+        /* TOAST NOTIFICATION */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: var(--green);
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @-webkit-keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
 
         /* GRID */
         #news-container { padding: 20px 30px; }
@@ -143,15 +169,21 @@
             letter-spacing: 0.5px;
         }
 
-        .star-btn {
+        /* ACTION BUTTONS */
+        .action-group {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: rgba(0,0,0,0.5);
+            display: flex;
+            gap: 5px;
+        }
+
+        .icon-btn {
+            background: rgba(0,0,0,0.6);
             border: none;
             color: #ccc;
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             cursor: pointer;
             font-size: 1rem;
@@ -161,8 +193,14 @@
             transition: all 0.2s;
             backdrop-filter: blur(4px);
         }
-        .star-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); color: #fff; }
+        
+        .icon-btn:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); color: #fff; }
+        
+        /* Star Specific */
         .star-btn.is-saved { color: var(--gold); text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); }
+        
+        /* Check Specific */
+        .check-btn:hover { color: var(--green); background: #fff; }
 
         .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
 
@@ -211,71 +249,67 @@
     </div>
     
     <div class="nav-bar">
-        <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 TRENDING NOW</button>
+        <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 TRENDING</button>
         <button class="nav-btn active" onclick="filterCategory('all', this)">All Feeds</button>
         <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
-        <button class="nav-btn" onclick="filterCategory('health', this)">Health & Med</button>
+        <button class="nav-btn" onclick="filterCategory('health', this)">Health</button>
         <button class="nav-btn" onclick="filterCategory('environment', this)">Environment</button>
-        <button class="nav-btn" onclick="filterCategory('physics', this)">Physics & Math</button>
-        <button class="nav-btn" onclick="filterCategory('tech', this)">Tech & AI</button>
+        <button class="nav-btn" onclick="filterCategory('physics', this)">Physics</button>
+        <button class="nav-btn" onclick="filterCategory('tech', this)">Tech</button>
         <button class="nav-btn saved-tab" onclick="showFavorites(this)">★ Saved</button>
     </div>
 </header>
 
 <div id="news-container">
-    <div id="loading">Connecting to global science wires...</div>
+    <div id="loading">Scanning global science wires...</div>
     <div id="news-grid"></div>
 </div>
+
+<div id="toast">Prompt copied! Paste into AI now.</div>
 
 <script>
     // --- MASSIVE SOURCE LIST ---
     const feeds = [
-        // --- 🔥 TRENDING / VIRAL (High Traffic Feeds) ---
-        { category: "trending", name: "ScienceAlert (Trending)", url: "https://www.sciencealert.com/feed" },
-        { category: "trending", name: "BBC Science (Top)", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
+        // --- 🔥 TRENDING ---
+        { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
+        { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
         { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
-        { category: "trending", name: "Scientific American (Features)", url: "http://rss.sciam.com/ScientificAmerican-Global" },
-        { category: "trending", name: "Wired (Top)", url: "https://www.wired.com/feed/category/science/latest/rss" },
-        { category: "trending", name: "Futurism (Buzz)", url: "https://futurism.com/feed" },
+        { category: "trending", name: "Scientific American", url: "http://rss.sciam.com/ScientificAmerican-Global" },
+        { category: "trending", name: "Wired", url: "https://www.wired.com/feed/category/science/latest/rss" },
+        { category: "trending", name: "Futurism", url: "https://futurism.com/feed" },
 
         // --- 🚀 SPACE ---
         { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
         { category: "space", name: "NASA Image Day", url: "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" },
-        { category: "space", name: "Sky & Telescope", url: "https://skyandtelescope.org/feed/" },
-        { category: "space", name: "ESA (European Space)", url: "https://www.esa.int/content/search/rss/feed/topic/1585" },
+        { category: "space", name: "ESA", url: "https://www.esa.int/content/search/rss/feed/topic/1585" },
         { category: "space", name: "Universe Today", url: "https://www.universetoday.com/feed/" },
         { category: "space", name: "EarthSky", url: "https://earthsky.org/feed" },
 
-        // --- 🏥 HEALTH & MEDICATION ---
+        // --- 🏥 HEALTH ---
         { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
-        { category: "health", name: "ScienceDaily (Health)", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
+        { category: "health", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
         { category: "health", name: "Stat News", url: "https://www.statnews.com/feed/" },
         { category: "health", name: "NIH Research", url: "https://www.nih.gov/news-events/feed.xml" },
         { category: "health", name: "Medical Xpress", url: "https://medicalxpress.com/rss-feed/" },
-        { category: "health", name: "WebMD (News)", url: "https://rssfeeds.webmd.com/rss/rss.aspx?RSSSource=RSS_PUBLIC" },
 
-        // --- 🌿 ENVIRONMENT & CLIMATE ---
+        // --- 🌿 ENVIRONMENT ---
         { category: "environment", name: "Treehugger", url: "https://www.treehugger.com/feeds/latest.xml" },
         { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
         { category: "environment", name: "EcoWatch", url: "https://www.ecowatch.com/feeds/feed.rss" },
-        { category: "environment", name: "Grist", url: "https://grist.org/feed/" },
-        { category: "environment", name: "ScienceDaily (Climate)", url: "https://www.sciencedaily.com/rss/earth_climate.xml" },
+        { category: "environment", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/earth_climate.xml" },
         { category: "environment", name: "Carbon Brief", url: "https://www.carbonbrief.org/feed" },
 
-        // --- ⚛️ PHYSICS & MATH ---
-        { category: "physics", name: "Quanta Magazine", url: "https://api.quantamagazine.org/feed/" },
+        // --- ⚛️ PHYSICS ---
+        { category: "physics", name: "Quanta", url: "https://api.quantamagazine.org/feed/" },
         { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" },
         { category: "physics", name: "APS Physics", url: "https://physics.aps.org/feed.rss" },
-        { category: "physics", name: "ScienceDaily (Math)", url: "https://www.sciencedaily.com/rss/computers_math/mathematics.xml" },
-        { category: "physics", name: "Symmetry Magazine", url: "https://www.symmetrymagazine.org/feed" },
+        { category: "physics", name: "Symmetry", url: "https://www.symmetrymagazine.org/feed" },
 
-        // --- 💻 TECH & LIFESTYLE ---
+        // --- 💻 TECH ---
         { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
         { category: "tech", name: "MIT Tech Review", url: "https://www.technologyreview.com/feed/" },
-        { category: "tech", name: "The Verge (Science)", url: "https://www.theverge.com/rss/science/index.xml" },
-        { category: "tech", name: "Ars Technica", url: "https://feeds.arstechnica.com/arstechnica/index" },
-        { category: "tech", name: "Engadget", url: "https://www.engadget.com/rss.xml" },
-        { category: "tech", name: "Gizmodo", url: "https://gizmodo.com/rss" }
+        { category: "tech", name: "The Verge", url: "https://www.theverge.com/rss/science/index.xml" },
+        { category: "tech", name: "Ars Technica", url: "https://feeds.arstechnica.com/arstechnica/index" }
     ];
 
     const DAYS_TO_SHOW = 7;
@@ -287,6 +321,50 @@
     setInterval(() => {
         document.getElementById('clock').innerText = new Date().toLocaleTimeString();
     }, 1000);
+
+    // --- PROMPT GENERATION LOGIC ---
+    function copyPrompt(link) {
+        const article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
+        if(!article) return;
+
+        // The precise prompt for the AI
+        const promptText = `
+I need you to help me generate a viral post for this article.
+
+SOURCE ARTICLE:
+Title: ${article.title}
+Link: ${article.link}
+Description: ${article.desc}
+
+REQUIREMENTS:
+1. 3 image overlay ideas.
+2. 3 punchy opening lines.
+3. An informative post (1500-1900 characters).
+
+STRICT CONSTRAINTS:
+- No bold. No italics.
+- Use spaces before and after dashes ( – ).
+- American spelling and grammar.
+- Imperial units first, Metric in parentheses.
+- Maintain MLA citations at the end.
+- Tone: Viral hook, narrative storytelling, reflective conclusion.
+- Style: Clear, accessible, not cheesy.
+- Text overlays should be short (8-12 words) and complete sentences.
+
+Please write it now.
+`;
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(promptText).then(() => {
+            showToast();
+        });
+    }
+
+    function showToast() {
+        var x = document.getElementById("toast");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    }
 
     // --- FAVORITES LOGIC ---
     function toggleFavorite(link) {
@@ -300,18 +378,14 @@
 
         localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
 
-        if (currentView === 'saved') {
-            renderGrid(favorites);
-        } else {
-            renderGrid(getCurrentFilteredList());
-        }
+        if (currentView === 'saved') { renderGrid(favorites); } 
+        else { renderGrid(getCurrentFilteredList()); }
     }
 
     function isSaved(link) { return favorites.some(f => f.link === link); }
 
     // --- FETCH LOGIC ---
     async function fetchFeed(feed) {
-        // Cache Busting + Raw Fetch
         const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
             const res = await fetch(proxyUrl);
@@ -330,14 +404,11 @@
                 if (pubDate < cutoffDate) return null;
 
                 let img = null;
-                // Complex Image Hunting
                 const media = item.querySelector("content, enclosure");
                 if (media && media.getAttribute("url")) img = media.getAttribute("url");
-                // Yahoo/Engadget specific media tags
                 if (!img && item.getElementsByTagName('media:content').length > 0) {
                      img = item.getElementsByTagName('media:content')[0].getAttribute('url');
                 }
-                // Fallback to description
                 if (!img) {
                     const descHtml = item.querySelector("description, summary, content")?.textContent || "";
                     const div = document.createElement('div');
@@ -352,7 +423,7 @@
                     title: item.querySelector("title").textContent,
                     link: item.querySelector("link").textContent || item.querySelector("link").getAttribute("href"),
                     time: pubDate,
-                    desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 110) + "...",
+                    desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 150) + "...",
                     img: img
                 };
             }).filter(item => item !== null);
@@ -363,10 +434,9 @@
     async function init() {
         const loading = document.getElementById('loading');
         loading.style.display = 'block';
-        loading.innerHTML = `Scanning 40+ global sources...`;
+        loading.innerHTML = `Scanning global science wires...`;
         document.getElementById('news-grid').innerHTML = '';
 
-        // Fetch everything in parallel
         const promises = feeds.map(f => fetchFeed(f));
         const results = await Promise.all(promises);
         
@@ -382,7 +452,7 @@
         grid.innerHTML = '';
 
         if (articles.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No articles found for this filter.</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No articles found.</div>`;
             return;
         }
 
@@ -396,14 +466,16 @@
 
             const savedClass = isSaved(news.link) ? 'is-saved' : '';
             const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            
-            // Special color for Trending badge
             let badgeColor = getCatColor(news.category);
             if(news.category === 'trending') badgeColor = '#f43f5e';
 
+            // IMPORTANT: The buttons are here
             card.innerHTML = `
                 <div class="card-image" style="${imgHtml}">
-                    <button class="star-btn ${savedClass}" onclick="toggleFavorite('${news.link}')">★</button>
+                    <div class="action-group">
+                        <button class="icon-btn check-btn" onclick="copyPrompt('${news.link}')" title="Generate Viral Post">✓</button>
+                        <button class="icon-btn star-btn ${savedClass}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
+                    </div>
                     <div class="category-badge" style="background:${badgeColor}">${news.category}</div>
                 </div>
                 <div class="card-content">
@@ -419,11 +491,9 @@
         });
     }
 
-    // --- FILTER HANDLERS ---
     function filterCategory(cat, btnElement) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
-        
         currentView = cat;
         renderGrid(getCurrentFilteredList());
     }
@@ -437,12 +507,7 @@
     }
 
     function getCurrentFilteredList() {
-        if (currentView === 'all') {
-            // In "All View", we exclude the "Trending" category to avoid duplicates, 
-            // unless you want them mixed in. Usually cleaner to keep Trending separate 
-            // or just mix them. Here I mix them but you can see the tags.
-            return allArticles; 
-        }
+        if (currentView === 'all') return allArticles; 
         return allArticles.filter(a => a.category === currentView);
     }
 
@@ -455,7 +520,6 @@
         return '#666';
     }
 
-    // Start
     init();
 
 </script>

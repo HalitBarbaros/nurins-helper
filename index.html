@@ -281,7 +281,7 @@
         <button class="nav-btn last24-tab" onclick="filterCategory('last24h', this)">🕒 Last 24h</button>
         <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 Trending</button>
         <button class="nav-btn active" onclick="filterCategory('all', this)">All Feeds</button>
-        <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
+        <button class="nav-btn" onclick="filterCategory('Custom', this)">My Sources</button> <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
         <button class="nav-btn" onclick="filterCategory('health', this)">Health</button>
         <button class="nav-btn" onclick="filterCategory('environment', this)">Nature</button>
         <button class="nav-btn" onclick="filterCategory('physics', this)">Physics</button>
@@ -350,7 +350,7 @@
     let allArticles = []; 
     let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
     let customFeeds = JSON.parse(localStorage.getItem('nurinsCustomFeeds')) || [];
-    let activeFeeds = [...defaultFeeds, ...customFeeds];
+    let activeFeeds = [...customFeeds, ...defaultFeeds]; // Load Custom first!
 
     let currentView = 'all'; 
     let isListView = false; 
@@ -371,7 +371,6 @@
         document.getElementById('modal-desc').innerText = article.desc; 
         
         document.getElementById('modal-link-btn').href = article.link;
-        // Make sure we pass a function reference, don't execute immediately
         document.getElementById('modal-save-btn').onclick = function() { toggleFavorite(article.link); showToast("Saved!"); };
         
         document.getElementById('modal-overlay').classList.add('open');
@@ -395,6 +394,10 @@
     function addCustomFeed() {
         const name = document.getElementById('feed-name-input').value;
         const url = document.getElementById('feed-url-input').value;
+        
+        // Safety check to ensure customFeeds is an array
+        if (!Array.isArray(customFeeds)) customFeeds = [];
+
         if(name && url) {
             const newFeed = { category: "Custom", name: name, url: url };
             customFeeds.push(newFeed);
@@ -483,7 +486,6 @@
     }
 
     // --- ROBUST FETCH ENGINE ---
-    // Try primary proxy, if fail, try fallback
     async function fetchWithFallback(url) {
         const proxies = [
             `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}&t=${Date.now()}`,
@@ -547,14 +549,12 @@
         } catch (e) { return []; }
     }
 
-    // --- THE MISSING FUNCTION IS ADDED BELOW ---
     function showFavorites(btnElement) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         currentView = 'saved';
         renderGrid(favorites);
     }
-    // ------------------------------------------
 
     async function init() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -589,7 +589,6 @@
                 if(items.length > 0) {
                     allArticles = allArticles.concat(items);
                     allArticles.sort((a,b) => b.time - a.time);
-                    // Debounce rendering slightly? No, immediate is snappier
                     renderGrid(getFilteredAndSearchedList());
                 }
                 completed++;
@@ -617,9 +616,6 @@
         }
 
         if (articles.length === 0) {
-            // Don't show empty state if loading isn't finished? 
-            // Actually, with progressive loading, we might show empty briefly. 
-            // We can check if 'allArticles' has length.
             if(allArticles.length === 0) return; // Still loading first batch
             grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#999; margin-top:50px;">No stories found here.</div>`;
             return;
@@ -634,7 +630,6 @@
             
             card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
             
-            // Make entire card click to open modal
             card.onclick = function(e) {
                 if(e.target.closest('.action-group')) return;
                 openArticle(news.link);

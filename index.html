@@ -583,6 +583,9 @@
         loading.style.display = 'block';
         document.getElementById('news-grid').innerHTML = '';
         const progressBar = document.getElementById('progress-bar');
+        
+        // --- FIX: CLEAR THE LIST AND CHECK FOR DUPLICATES ---
+        allArticles = []; 
 
         let completed = 0;
         const total = activeFeeds.length;
@@ -591,10 +594,16 @@
         activeFeeds.forEach(feed => {
             fetchFeed(feed).then(items => {
                 if(items.length > 0) {
-                    allArticles = allArticles.concat(items);
-                    allArticles.sort((a,b) => b.time - a.time);
-                    // Debounce rendering slightly? No, immediate is snappier
-                    renderGrid(getFilteredAndSearchedList());
+                    // Filter duplicates based on Link
+                    const uniqueItems = items.filter(newItem => 
+                        !allArticles.some(existingItem => existingItem.link === newItem.link)
+                    );
+                    
+                    if (uniqueItems.length > 0) {
+                        allArticles = allArticles.concat(uniqueItems);
+                        allArticles.sort((a,b) => b.time - a.time);
+                        renderGrid(getFilteredAndSearchedList());
+                    }
                 }
                 completed++;
                 progressBar.style.width = `${(completed/total)*100}%`;

@@ -19,7 +19,7 @@
             --gold: #d97706;          
             --border: #e2e2e2;
             --shadow: rgba(0, 0, 0, 0.06);
-            --font-serif: "Cheltenham", "Georgia", "Times New Roman", serif; 
+            --font-serif: "Georgia", serif; 
             --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
 
@@ -27,61 +27,55 @@
         header { background: var(--header-bg); padding: 20px 40px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 20px; flex-wrap: wrap; }
         .title-group h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; color: #000; font-weight: 700; font-family: var(--font-serif); }
-        .title-group span { font-size: 0.85rem; color: var(--text-muted); margin-left: 10px; }
-        .tools-group { display: flex; gap: 10px; align-items: center; flex-grow: 1; justify-content: flex-end; }
         #progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: transparent; }
         #progress-bar { height: 100%; background: #000; width: 0%; transition: width 0.2s; }
-        #search-input { background: #fff; border: 1px solid #ccc; color: var(--text-main); padding: 8px 18px; border-radius: 4px; font-size: 0.9rem; width: 220px; outline: none; transition: all 0.2s; }
-        #search-input:focus { border-color: #000; width: 280px; }
-        .tool-btn { background: #fff; border: 1px solid #ccc; color: var(--text-main); padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
-        .tool-btn:hover { background: #000; color: #fff; border-color: #000; }
-        .nav-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;}
-        .nav-btn { background: transparent; color: #666; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-btn:hover { color: #000; background: rgba(0,0,0,0.05); }
+        
+        .tools-group { display: flex; gap: 10px; }
+        #search-input { background: #fff; border: 1px solid #ccc; padding: 8px 18px; border-radius: 4px; width: 220px; outline: none; }
+        #search-input:focus { border-color: #000; }
+        
+        .tool-btn { background: #fff; border: 1px solid #ccc; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+        .tool-btn:hover { background: #000; color: #fff; }
+
+        .nav-bar { display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;}
+        .nav-btn { background: transparent; color: #666; border: none; padding: 6px 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         .nav-btn.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; }
-        .nav-btn.saved-tab.active { color: var(--gold); border-color: var(--gold); }
-        #pitch-bar { display: none; background: #fff; margin: 20px 40px 0 40px; padding: 15px; border-radius: 8px; border: 1px solid var(--border); align-items: center; justify-content: space-between; }
+        .nav-btn.saved-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+        #pitch-bar { display: none; background: #fff; margin: 20px 40px 0; padding: 15px; border: 1px solid var(--border); justify-content: space-between; align-items: center; border-radius: 4px; }
         #pitch-bar.show { display: flex; }
-        .pitch-btn { background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        #add-feed-container { display: none; position: absolute; top: 70px; right: 30px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border); z-index: 200; width: 300px; }
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s; }
-        #modal-overlay.open { display: flex; opacity: 1; }
-        #article-modal { background: #fff; width: 90%; max-width: 800px; max-height: 90vh; border-radius: 0; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); position: relative; border: 1px solid #ccc; transform: translateY(20px); transition: transform 0.2s; }
-        #modal-overlay.open #article-modal { transform: translateY(0); }
-        #modal-image { height: 350px; background-color: #eee; background-size: cover; background-position: center; }
+        .pitch-btn { background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+
+        #add-feed-container { display: none; position: absolute; top: 70px; right: 30px; background: #fff; padding: 20px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 200; width: 300px; }
+        
+        /* MODAL */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
+        #modal-overlay.open { display: flex; }
+        #article-modal { background: #fff; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid #ccc; }
+        #modal-image { height: 350px; background-size: cover; background-position: center; background-color: #eee; }
         #modal-content { padding: 40px; }
-        #modal-meta { font-size: 0.8rem; color: #666; text-transform: uppercase; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        #modal-title { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 700; color: #000; line-height: 1.1; margin-bottom: 20px; }
+        #modal-title { font-family: var(--font-serif); font-size: 2.2rem; line-height: 1.1; margin-bottom: 20px; }
         #modal-desc { font-family: var(--font-serif); font-size: 1.2rem; color: #333; line-height: 1.6; margin-bottom: 30px; }
-        #modal-actions { display: flex; gap: 15px; flex-wrap: wrap; }
-        .modal-btn { padding: 12px 24px; border-radius: 4px; font-weight: bold; cursor: pointer; border: none; font-size: 0.9rem; transition: 0.2s; }
-        .btn-primary { background: #000; color: #fff; }
-        .btn-secondary { background: transparent; border: 1px solid #ccc; color: #000; }
-        #close-modal { position: absolute; top: 20px; right: 20px; background: #fff; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #eee; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        #news-container { padding: 30px 40px; }
-        #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; max-width: 1600px; margin: 0 auto; }
-        .news-card { background: var(--card-bg); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.02); cursor: pointer; }
-        .news-card.is-fresh { border: 1px solid var(--green); }
+        #close-modal { position: absolute; top: 20px; right: 20px; background: #fff; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #eee; font-size: 1.5rem; cursor: pointer; }
+
+        #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 30px 40px; max-width: 1600px; margin: 0 auto; }
+        .news-card { background: var(--card-bg); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; border: 1px solid var(--border); cursor: pointer; }
         .news-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .card-image { height: 180px; background-color: #f0f0f0; background-size: cover; background-position: center; position: relative; pointer-events: none; }
-        .fresh-badge { display: none; position: absolute; top: 10px; right: 10px; background: var(--green); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 4px 8px; border-radius: 2px; z-index: 20; text-transform: uppercase; }
-        .is-fresh .fresh-badge { display: block; }
-        .category-badge { position: absolute; top: 10px; left: 10px; background: #fff; color: #000; padding: 4px 8px; font-size: 0.6rem; border-radius: 2px; font-weight: 800; z-index: 20; border: 1px solid rgba(0,0,0,0.1); text-transform: uppercase; }
+        .card-image { height: 180px; background-size: cover; background-position: center; background-color: #f0f0f0; }
+        
+        .category-badge { position: absolute; top: 10px; left: 10px; background: #fff; padding: 4px 8px; font-size: 0.6rem; font-weight: 800; border: 1px solid #eee; text-transform: uppercase; }
         .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; pointer-events: auto; z-index: 30; }
-        .icon-btn { background: #fff; border: 1px solid rgba(0,0,0,0.1); color: #000; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .icon-btn { background: #fff; border: 1px solid #eee; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .icon-btn:hover { background: #000; color: #fff; }
         .star-btn.is-saved { background: var(--gold) !important; color: #fff !important; border-color: var(--gold) !important; }
-        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; pointer-events: none; }
-        .source-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
-        .date-display { color: #999; }
-        .headline { font-size: 1.15rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.3; color: #000; font-family: var(--font-serif); }
-        .snippet { font-size: 0.95rem; color: #555; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-family: var(--font-serif); }
-        #toast { visibility: hidden; min-width: 250px; background-color: #000; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 500; }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; font-style: italic; font-family: var(--font-serif); }
-        .briefing-header { text-align: center; font-family: var(--font-serif); font-size: 2rem; font-weight: bold; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 20px; max-width: 800px; margin: 0 auto 40px auto; }
+        
+        .card-content { padding: 20px; flex-grow: 1; }
+        .source-row { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+        .headline { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; line-height: 1.3; margin: 0 0 10px; }
+        
+        #toast { visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 12px 24px; border-radius: 4px; z-index: 3000; }
+        #toast.show { visibility: visible; }
+        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; font-style: italic; }
     </style>
 </head>
 <body>
@@ -91,220 +85,212 @@
         <button id="close-modal" onclick="closeModal(event)">×</button>
         <div id="modal-image"></div>
         <div id="modal-content">
-            <div id="modal-meta">
-                <span id="modal-source">Source</span>
-                <span id="modal-date">Date</span>
-            </div>
-            <div id="modal-title">Article Headline</div>
-            <div id="modal-desc">Article summary text goes here...</div>
-            <div id="modal-actions">
-                <a id="modal-link-btn" href="#" target="_blank" class="modal-btn btn-primary">Read Full Story ↗</a>
-                <button id="modal-save-btn" class="modal-btn btn-secondary">Save to List</button>
-            </div>
+            <div id="modal-title"></div>
+            <div id="modal-desc"></div>
+            <a id="modal-link-btn" href="#" target="_blank" class="pitch-btn" style="text-decoration:none; display:inline-block;">Read Full Story ↗</a>
         </div>
     </div>
 </div>
 
 <header>
     <div class="header-top">
-        <div class="title-group"><h1>Nurin's Little Helper <span id="clock">...</span></h1></div>
+        <div class="title-group"><h1>Nurin's Little Helper</h1></div>
         <div class="tools-group">
             <input type="text" id="search-input" placeholder="Search news..." oninput="handleSearch()">
-            <button class="tool-btn" onclick="toggleView()" title="View Mode"><span id="view-icon">☰ List</span></button>
-            <button class="tool-btn" onclick="toggleAddFeed()" title="Add Custom Feed">➕ Source</button>
-            <button class="tool-btn" onclick="init()" title="Refresh">↻</button>
+            <button class="tool-btn" onclick="toggleAddFeed()">➕ Source</button>
+            <button class="tool-btn" onclick="init()">↻ Refresh</button>
         </div>
     </div>
     <div id="progress-bar-container"><div id="progress-bar"></div></div>
     <div class="nav-bar">
-        <button class="nav-btn briefing-tab" onclick="filterCategory('briefing', this)">☕ Briefing</button>
-        <button class="nav-btn last24-tab" onclick="filterCategory('last24h', this)">🕒 Last 24h</button>
-        <button class="nav-btn trending-tab" onclick="filterCategory('trending', this)">🔥 Trending</button>
-        <button class="nav-btn active" onclick="filterCategory('all', this)">All Feeds</button>
-        <button class="nav-btn" onclick="filterCategory('space', this)">Space</button>
-        <button class="nav-btn" onclick="filterCategory('health', this)">Health</button>
-        <button class="nav-btn" onclick="filterCategory('environment', this)">Nature</button>
-        <button class="nav-btn" onclick="filterCategory('physics', this)">Physics</button>
-        <button class="nav-btn" onclick="filterCategory('tech', this)">Tech</button>
-        <button class="nav-btn saved-tab" onclick="showFavorites(this)">★ Saved</button>
-        <button id="sync-btn" class="nav-btn" onclick="generateSyncLink()" style="display:none; margin-left:auto;">☁️ Sync</button>
+        <button class="nav-btn briefing-tab" onclick="changeTab('briefing', this)">☕ Briefing</button>
+        <button class="nav-btn last24-tab" onclick="changeTab('last24h', this)">🕒 Last 24h</button>
+        <button class="nav-btn active" onclick="changeTab('all', this)">All</button>
+        <button class="nav-btn" onclick="changeTab('space', this)">Space</button>
+        <button class="nav-btn" onclick="changeTab('health', this)">Health</button>
+        <button class="nav-btn" onclick="changeTab('environment', this)">Nature</button>
+        <button class="nav-btn" onclick="changeTab('tech', this)">Tech</button>
+        <button class="nav-btn saved-tab" onclick="changeTab('saved', this)">★ Saved</button>
     </div>
 </header>
 
 <div id="pitch-bar">
-    <div style="font-weight:bold;">Pitch Builder</div>
-    <div style="font-size:0.9rem; color:var(--text-muted);"><span id="saved-count">0</span> stories saved.</div>
-    <button class="pitch-btn" onclick="copyPitch()">📋 Copy Full Pitch List</button>
+    <div id="pitch-text">Pitch Builder: <span id="saved-count">0</span> stories.</div>
+    <button class="pitch-btn" onclick="copyPitch()">📋 Copy Pitch List</button>
 </div>
 
 <div id="add-feed-container">
-    <h3>Add Custom RSS Source</h3>
-    <input type="text" id="feed-name-input" placeholder="Source Name">
-    <input type="text" id="feed-url-input" placeholder="RSS URL">
-    <button class="pitch-btn" style="width:100%;" onclick="addCustomFeed()">Add Source</button>
+    <h3>Add Source</h3>
+    <input type="text" id="fn-in" placeholder="Name (e.g. NASA)" style="width:100%; margin-bottom:5px;">
+    <input type="text" id="fu-in" placeholder="RSS URL" style="width:100%; margin-bottom:10px;">
+    <button class="pitch-btn" style="width:100%;" onclick="addCustomFeed()">Save Source</button>
 </div>
 
 <div id="news-container"><div id="loading">Connecting to wires...</div><div id="news-grid"></div></div>
 <div id="toast">Notification</div>
 
 <script>
-    const iconCopy = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
-    const iconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
-    const iconPitch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>`;
-
     const defaultFeeds = [
-        { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
-        { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
-        { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
         { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
         { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
-        { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
-        { category: "physics", name: "Quanta", url: "https://api.quantamagazine.org/feed/" },
-        { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" }
+        { category: "environment", name: "Nature News", url: "https://www.nature.com/nature.rss" },
+        { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
+        { category: "trending", name: "BBC Science", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml" }
     ];
 
-    let allArticles = []; 
-    let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
-    let customFeeds = JSON.parse(localStorage.getItem('nurinsCustomFeeds')) || [];
-    let activeFeeds = [...defaultFeeds, ...customFeeds];
-    let currentView = 'all'; 
-    let isListView = false;
-
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }, 1000);
-
-    function toggleFavorite(link) {
-        // Fix: Find article across all available lists
-        let article = allArticles.find(a => a.link === link) || favorites.find(a => a.link === link);
-        if (!article) return;
-        const index = favorites.findIndex(f => f.link === link);
-        if (index > -1) { favorites.splice(index, 1); } 
-        else { favorites.push(article); }
-        localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
-        showToast(index > -1 ? "Removed from Saved" : "Saved to List");
-        refreshGrid();
-    }
-
-    function refreshGrid() {
-        if (currentView === 'saved') renderGrid(favorites);
-        else renderGrid(getFilteredList());
-    }
-
-    function renderGrid(articles) {
-        const grid = document.getElementById('news-grid');
-        grid.innerHTML = '';
-        if (articles.length === 0 && currentView === 'saved') {
-            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px;">No saved stories. Click ★ on any article to save it.</div>';
-            return;
-        }
-        articles.forEach(news => {
-            const card = document.createElement('div');
-            const isFav = favorites.some(f => f.link === news.link);
-            card.className = 'news-card';
-            card.onclick = (e) => { if(!e.target.closest('.action-group')) openArticle(news.link); };
-            const imgHtml = news.img ? `background-image: url('${news.img}')` : `background: #e6e0d8;`;
-            const safeTitle = news.title.replace(/'/g, "\\'");
-            card.innerHTML = `
-                <div class="card-image" style="${imgHtml}">
-                    <div class="category-badge">${news.category}</div>
-                    <div class="action-group">
-                        <button class="icon-btn" onclick="googleSearch('${safeTitle}')">${iconSearch}</button>
-                        <button class="icon-btn pitch-icon-btn" onclick="copySinglePitch('${news.link}')">${iconPitch}</button>
-                        <button class="icon-btn star-btn ${isFav ? 'is-saved' : ''}" onclick="event.stopPropagation(); toggleFavorite('${news.link}')">★</button>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <div class="source-row"><span>${news.source}</span></div>
-                    <div class="headline">${news.title}</div>
-                    <div class="snippet">${news.desc}</div>
-                </div>`;
-            grid.appendChild(card);
-        });
-        document.getElementById('pitch-bar').classList.toggle('show', currentView === 'saved');
-        document.getElementById('sync-btn').style.display = currentView === 'saved' ? 'block' : 'none';
-        document.getElementById('saved-count').innerText = favorites.length;
-    }
+    let allArticles = [];
+    let favorites = JSON.parse(localStorage.getItem('nurinsFavs')) || [];
+    let customFeeds = JSON.parse(localStorage.getItem('nurinsCustom')) || [];
+    let currentView = 'all';
 
     async function fetchFeed(feed) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
+        const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
-            const res = await fetch(proxyUrl);
+            const res = await fetch(proxy);
             const str = await res.text();
-            const data = new window.DOMParser().parseFromString(str, "text/xml");
-            const items = Array.from(data.querySelectorAll("item, entry")).slice(0, 15);
-            return items.map(item => {
-                const link = item.querySelector("link")?.textContent || item.querySelector("link")?.getAttribute("href");
-                let img = item.querySelector("enclosure")?.getAttribute("url") || item.querySelector("content")?.getAttribute("url");
+            const xml = new window.DOMParser().parseFromString(str, "text/xml");
+            const items = Array.from(xml.querySelectorAll("item, entry")).slice(0, 15);
+            return items.map(i => {
+                const link = i.querySelector("link")?.textContent || i.querySelector("link")?.getAttribute("href");
+                let img = i.querySelector("enclosure")?.getAttribute("url") || i.querySelector("content")?.getAttribute("url");
                 if(!img) {
-                    const desc = item.querySelector("description")?.textContent || "";
-                    const m = desc.match(/src="([^"]+)"/);
+                    const d = i.querySelector("description")?.textContent || "";
+                    const m = d.match(/src="([^"]+)"/);
                     if(m) img = m[1];
                 }
                 return {
-                    category: feed.category, source: feed.name, title: item.querySelector("title").textContent,
-                    link: link, time: new Date(item.querySelector("pubDate, published").textContent),
-                    desc: (item.querySelector("description")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 150) + "...",
-                    img: img
+                    id: link, category: feed.category, source: feed.name,
+                    title: i.querySelector("title").textContent, link: link,
+                    desc: (i.querySelector("description")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 200),
+                    img: img, time: new Date(i.querySelector("pubDate, published")?.textContent || Date.now())
                 };
             });
-        } catch (e) { return []; }
+        } catch(e) { return []; }
     }
 
     async function init() {
         allArticles = [];
         document.getElementById('loading').style.display = 'block';
-        const progressBar = document.getElementById('progress-bar');
-        let completed = 0;
-        activeFeeds.forEach(async feed => {
-            const items = await fetchFeed(feed);
-            allArticles = [...allArticles, ...items].sort((a,b) => b.time - a.time);
-            completed++;
-            progressBar.style.width = `${(completed/activeFeeds.length)*100}%`;
-            if (currentView !== 'saved') refreshGrid();
-            if(completed === activeFeeds.length) document.getElementById('loading').style.display = 'none';
-        });
+        const active = [...defaultFeeds, ...customFeeds];
+        let done = 0;
+        for (const f of active) {
+            const news = await fetchFeed(f);
+            news.forEach(a => {
+                if(!allArticles.find(ex => ex.id === a.id)) allArticles.push(a);
+            });
+            done++;
+            document.getElementById('progress-bar').style.width = `${(done/active.length)*100}%`;
+            if(currentView !== 'saved') render();
+        }
+        document.getElementById('loading').style.display = 'none';
+        setTimeout(() => document.getElementById('progress-bar').style.width = '0', 1000);
     }
 
-    function getFilteredList() {
-        let list = allArticles;
-        if (currentView === 'last24h') list = allArticles.filter(a => (new Date() - a.time) < 86400000);
-        else if (currentView !== 'all' && currentView !== 'briefing') list = allArticles.filter(a => a.category === currentView);
+    function render() {
+        const grid = document.getElementById('news-grid');
+        grid.innerHTML = '';
+        
+        let list;
+        if (currentView === 'saved') {
+            list = [...favorites];
+        } else if (currentView === 'briefing') {
+            list = getBriefingList();
+        } else if (currentView === 'last24h') {
+            list = allArticles.filter(a => (new Date() - a.time) < 86400000);
+        } else if (currentView === 'all') {
+            list = [...allArticles];
+        } else {
+            list = allArticles.filter(a => a.category === currentView);
+        }
+        
         const term = document.getElementById('search-input').value.toLowerCase();
-        return term ? list.filter(a => a.title.toLowerCase().includes(term)) : list;
+        if(term) list = list.filter(a => a.title.toLowerCase().includes(term) || a.source.toLowerCase().includes(term));
+
+        list.sort((a,b) => b.time - a.time).forEach(a => {
+            const isFav = favorites.some(f => f.id === a.id);
+            const card = document.createElement('div');
+            card.className = 'news-card';
+            card.onclick = (e) => { if(!e.target.closest('.action-group')) openArticle(a); };
+            card.innerHTML = `
+                <div class="card-image" style="background-image:url('${a.img || ''}')">
+                    <div class="category-badge">${a.category}</div>
+                    <div class="action-group">
+                        <button class="icon-btn star-btn ${isFav?'is-saved':''}" onclick="event.stopPropagation(); toggleFav('${a.id}')">★</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="source-row">${a.source}</div>
+                    <div class="headline">${a.title}</div>
+                </div>`;
+            grid.appendChild(card);
+        });
+
+        document.getElementById('pitch-bar').classList.toggle('show', currentView === 'saved');
+        document.getElementById('saved-count').innerText = favorites.length;
     }
 
-    function filterCategory(cat, btn) {
+    function getBriefingList() {
+        const cats = ['space', 'health', 'environment', 'tech'];
+        let list = [];
+        cats.forEach(c => {
+            const top = allArticles.find(a => a.category === c);
+            if(top) list.push(top);
+        });
+        return list;
+    }
+
+    function changeTab(tab, btn) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        currentView = cat;
-        refreshGrid();
+        currentView = tab;
+        render();
     }
 
-    function showFavorites(btn) {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentView = 'saved';
-        renderGrid(favorites);
+    function toggleFav(id) {
+        const art = allArticles.find(a => a.id === id) || favorites.find(f => f.id === id);
+        if(!art) return;
+        const idx = favorites.findIndex(f => f.id === id);
+        if(idx > -1) {
+            favorites.splice(idx, 1);
+            showToast("Removed from Saved");
+        } else {
+            favorites.push(art);
+            showToast("Saved to Pitch List");
+        }
+        localStorage.setItem('nurinsFavs', JSON.stringify(favorites));
+        render(); // This re-renders the current view so the star turns gold immediately
     }
 
-    function openArticle(link) {
-        let a = allArticles.find(x => x.link === link) || favorites.find(x => x.link === link);
-        document.getElementById('modal-image').style.backgroundImage = `url('${a.img || ''}')`;
+    function openArticle(a) {
         document.getElementById('modal-title').innerText = a.title;
         document.getElementById('modal-desc').innerText = a.desc;
+        document.getElementById('modal-image').style.backgroundImage = `url('${a.img || ''}')`;
         document.getElementById('modal-link-btn').href = a.link;
-        document.getElementById('modal-save-btn').onclick = () => toggleFavorite(a.link);
         document.getElementById('modal-overlay').classList.add('open');
     }
 
     function closeModal(e) { if(e.target.id === 'modal-overlay' || e.target.id === 'close-modal') document.getElementById('modal-overlay').classList.remove('open'); }
-    function handleSearch() { refreshGrid(); }
-    function copySinglePitch(l) { const a = allArticles.find(x => x.link === l) || favorites.find(x => x.link === l); navigator.clipboard.writeText(`${a.title} (${a.source}) - ${a.link}`); showToast("Copied for Pitch"); }
-    function copyPitch() { let t = favorites.map(f => `${f.title} (${f.source}) - ${f.link}`).join('\n\n'); navigator.clipboard.writeText(t); showToast("Full Pitch List Copied"); }
-    function showToast(m) { const t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(() => t.className = "", 3000); }
-    function googleSearch(t) { window.open(`https://news.google.com/search?q=${encodeURIComponent(t)}`, '_blank'); }
-    function toggleView() { isListView = !isListView; document.body.classList.toggle('list-view'); }
+    function handleSearch() { render(); }
     function toggleAddFeed() { const c = document.getElementById('add-feed-container'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; }
     
+    function addCustomFeed() {
+        const n = document.getElementById('fn-in').value;
+        const u = document.getElementById('fu-in').value;
+        if(n && u) {
+            customFeeds.push({category: 'Custom', name: n, url: u});
+            localStorage.setItem('nurinsCustom', JSON.stringify(customFeeds));
+            location.reload();
+        }
+    }
+
+    function copyPitch() {
+        const t = favorites.map(f => `${f.title} (${f.source}) - ${f.link}`).join('\n\n');
+        navigator.clipboard.writeText(t);
+        showToast("Pitch List Copied");
+    }
+
+    function showToast(m) { const t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(() => t.className = "", 3000); }
+
     init();
 </script>
 </body>

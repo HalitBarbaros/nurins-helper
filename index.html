@@ -6,83 +6,51 @@
     <title>Nurin's Little Helper</title>
     <style>
         :root {
-            /* NYT / BEIGE PALETTE */
-            --bg-color: #fdfcf8;      
-            --header-bg: #f7f5f2;     
-            --card-bg: #ffffff;       
-            --text-main: #121212;     
-            --text-muted: #666666;    
-            --accent: #c0a080;        
-            --accent-hover: #333333;  
-            --viral: #b91c1c;         
-            --green: #047857;         
-            --gold: #d97706;          
-            --border: #e2e2e2;
-            --shadow: rgba(0, 0, 0, 0.06);
-            --font-serif: "Georgia", serif; 
-            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            --bg-color: #fdfcf8; --header-bg: #f7f5f2; --card-bg: #ffffff; --text-main: #121212; --text-muted: #666666;
+            --accent: #c0a080; --viral: #b91c1c; --green: #047857; --gold: #d97706; --border: #e2e2e2;
+            --font-serif: "Georgia", serif; --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
         }
-
         body { font-family: var(--font-sans); background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.5; }
         header { background: var(--header-bg); padding: 20px 40px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 20px; flex-wrap: wrap; }
-        .title-group h1 { margin: 0; font-size: 1.8rem; letter-spacing: -0.5px; color: #000; font-weight: 700; font-family: var(--font-serif); }
+        .title-group h1 { margin: 0; font-size: 1.8rem; color: #000; font-family: var(--font-serif); font-weight: 700; }
         #progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: transparent; }
-        #progress-bar { height: 100%; background: #000; width: 0%; transition: width 0.2s; }
-        
+        #progress-bar { height: 100%; background: #000; width: 0%; transition: width 0.4s ease; }
         .tools-group { display: flex; gap: 10px; }
         #search-input { background: #fff; border: 1px solid #ccc; padding: 8px 18px; border-radius: 4px; width: 220px; outline: none; }
-        #search-input:focus { border-color: #000; }
-        
-        .tool-btn { background: #fff; border: 1px solid #ccc; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 0.9rem; }
-        .tool-btn:hover { background: #000; color: #fff; }
-
-        .nav-bar { display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;}
+        .tool-btn { background: #fff; border: 1px solid #ccc; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: 500; }
+        .nav-bar { display: flex; gap: 10px; overflow-x: auto; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
         .nav-btn { background: transparent; color: #666; border: none; padding: 6px 12px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
-        .nav-btn.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; }
+        .nav-btn.active { color: #000; border-bottom: 2px solid #000; }
         .nav-btn.saved-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-
-        #pitch-bar { display: none; background: #fff; margin: 20px 40px 0; padding: 15px; border: 1px solid var(--border); justify-content: space-between; align-items: center; border-radius: 4px; }
+        #pitch-bar { display: none; background: #fff; margin: 20px 40px 0; padding: 15px; border: 1px solid var(--border); justify-content: space-between; align-items: center; }
         #pitch-bar.show { display: flex; }
         .pitch-btn { background: #000; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-
-        #add-feed-container { display: none; position: absolute; top: 70px; right: 30px; background: #fff; padding: 20px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 200; width: 300px; }
-        
-        /* MODAL */
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
         #modal-overlay.open { display: flex; }
         #article-modal { background: #fff; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; position: relative; border: 1px solid #ccc; }
         #modal-image { height: 350px; background-size: cover; background-position: center; background-color: #eee; }
         #modal-content { padding: 40px; }
         #modal-title { font-family: var(--font-serif); font-size: 2.2rem; line-height: 1.1; margin-bottom: 20px; }
-        #modal-desc { font-family: var(--font-serif); font-size: 1.2rem; color: #333; line-height: 1.6; margin-bottom: 30px; }
-        #close-modal { position: absolute; top: 20px; right: 20px; background: #fff; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #eee; font-size: 1.5rem; cursor: pointer; }
-
+        #modal-desc { font-family: var(--font-serif); font-size: 1.2rem; color: #333; margin-bottom: 30px; }
         #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; padding: 30px 40px; max-width: 1600px; margin: 0 auto; }
-        .news-card { background: var(--card-bg); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; border: 1px solid var(--border); cursor: pointer; }
-        .news-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .news-card { background: #fff; border: 1px solid var(--border); cursor: pointer; position: relative; display: flex; flex-direction: column; }
         .card-image { height: 180px; background-size: cover; background-position: center; background-color: #f0f0f0; }
-        
         .category-badge { position: absolute; top: 10px; left: 10px; background: #fff; padding: 4px 8px; font-size: 0.6rem; font-weight: 800; border: 1px solid #eee; text-transform: uppercase; }
-        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; pointer-events: auto; z-index: 30; }
-        .icon-btn { background: #fff; border: 1px solid #eee; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .icon-btn:hover { background: #000; color: #fff; }
-        .star-btn.is-saved { background: var(--gold) !important; color: #fff !important; border-color: var(--gold) !important; }
-        
-        .card-content { padding: 20px; flex-grow: 1; }
-        .source-row { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #888; margin-bottom: 10px; }
-        .headline { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; line-height: 1.3; margin: 0 0 10px; }
-        
+        .action-group { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px; pointer-events: auto; }
+        .icon-btn { background: #fff; border: 1px solid #eee; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .star-btn.is-saved { background: var(--gold) !important; color: #fff !important; }
+        .card-content { padding: 20px; }
+        .headline { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; line-height: 1.3; }
         #toast { visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 12px 24px; border-radius: 4px; z-index: 3000; }
         #toast.show { visibility: visible; }
-        #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div id="modal-overlay" onclick="closeModal(event)">
     <div id="article-modal">
-        <button id="close-modal" onclick="closeModal(event)">×</button>
+        <button onclick="closeModal(event)" style="position:absolute; top:20px; right:20px; background:#fff; border:1px solid #eee; width:40px; height:40px; border-radius:50%; cursor:pointer;">×</button>
         <div id="modal-image"></div>
         <div id="modal-content">
             <div id="modal-title"></div>
@@ -96,15 +64,14 @@
     <div class="header-top">
         <div class="title-group"><h1>Nurin's Little Helper</h1></div>
         <div class="tools-group">
-            <input type="text" id="search-input" placeholder="Search news..." oninput="handleSearch()">
-            <button class="tool-btn" onclick="toggleAddFeed()">➕ Source</button>
-            <button class="tool-btn" onclick="init()">↻ Refresh</button>
+            <input type="text" id="search-input" placeholder="Search news..." oninput="render()">
+            <button class="tool-btn" onclick="init()">↻ Sync</button>
         </div>
     </div>
     <div id="progress-bar-container"><div id="progress-bar"></div></div>
     <div class="nav-bar">
         <button class="nav-btn briefing-tab" onclick="changeTab('briefing', this)">☕ Briefing</button>
-        <button class="nav-btn last24-tab" onclick="changeTab('last24h', this)">🕒 Last 24h</button>
+        <button class="nav-btn last24-tab" onclick="changeTab('last24h', this)">🕒 24h</button>
         <button class="nav-btn active" onclick="changeTab('all', this)">All</button>
         <button class="nav-btn" onclick="changeTab('space', this)">Space</button>
         <button class="nav-btn" onclick="changeTab('health', this)">Health</button>
@@ -119,34 +86,30 @@
     <button class="pitch-btn" onclick="copyPitch()">📋 Copy Pitch List</button>
 </div>
 
-<div id="add-feed-container">
-    <h3>Add Source</h3>
-    <input type="text" id="fn-in" placeholder="Name (e.g. NASA)" style="width:100%; margin-bottom:5px;">
-    <input type="text" id="fu-in" placeholder="RSS URL" style="width:100%; margin-bottom:10px;">
-    <button class="pitch-btn" style="width:100%;" onclick="addCustomFeed()">Save Source</button>
-</div>
-
-<div id="news-container"><div id="loading">Connecting to wires...</div><div id="news-grid"></div></div>
+<div id="news-grid"></div>
 <div id="toast">Notification</div>
 
 <script>
-    const defaultFeeds = [
+    const feeds = [
         { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
         { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
         { category: "environment", name: "Nature News", url: "https://www.nature.com/nature.rss" },
         { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
-        { category: "trending", name: "BBC Science", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml" }
+        { category: "trending", name: "BBC Science", url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
+        { category: "space", name: "NASA News", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" },
+        { category: "health", name: "ScienceDaily Health", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
+        { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" }
     ];
 
     let allArticles = [];
     let favorites = JSON.parse(localStorage.getItem('nurinsFavs')) || [];
-    let customFeeds = JSON.parse(localStorage.getItem('nurinsCustom')) || [];
     let currentView = 'all';
 
     async function fetchFeed(feed) {
         const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
             const res = await fetch(proxy);
+            if (!res.ok) return [];
             const str = await res.text();
             const xml = new window.DOMParser().parseFromString(str, "text/xml");
             const items = Array.from(xml.querySelectorAll("item, entry")).slice(0, 15);
@@ -170,42 +133,38 @@
 
     async function init() {
         allArticles = [];
-        document.getElementById('loading').style.display = 'block';
-        const active = [...defaultFeeds, ...customFeeds];
-        let done = 0;
-        for (const f of active) {
+        document.getElementById('news-grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px;">Syncing wires...</div>';
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.style.width = '10%';
+        
+        let completed = 0;
+        // Launch all fetches in parallel
+        const promises = feeds.map(async (f) => {
             const news = await fetchFeed(f);
             news.forEach(a => {
                 if(!allArticles.find(ex => ex.id === a.id)) allArticles.push(a);
             });
-            done++;
-            document.getElementById('progress-bar').style.width = `${(done/active.length)*100}%`;
-            if(currentView !== 'saved') render();
-        }
-        document.getElementById('loading').style.display = 'none';
-        setTimeout(() => document.getElementById('progress-bar').style.width = '0', 1000);
+            completed++;
+            progressBar.style.width = `${(completed / feeds.length) * 100}%`;
+            // Progressive render
+            if (currentView !== 'saved') render();
+        });
+
+        await Promise.all(promises);
+        setTimeout(() => progressBar.style.width = '0', 800);
     }
 
     function render() {
         const grid = document.getElementById('news-grid');
-        grid.innerHTML = '';
-        
-        let list;
-        if (currentView === 'saved') {
-            list = [...favorites];
-        } else if (currentView === 'briefing') {
-            list = getBriefingList();
-        } else if (currentView === 'last24h') {
-            list = allArticles.filter(a => (new Date() - a.time) < 86400000);
-        } else if (currentView === 'all') {
-            list = [...allArticles];
-        } else {
-            list = allArticles.filter(a => a.category === currentView);
-        }
+        let list = (currentView === 'saved') ? [...favorites] : 
+                   (currentView === 'briefing') ? getBriefing() :
+                   (currentView === 'last24h') ? allArticles.filter(a => (new Date() - a.time) < 86400000) :
+                   (currentView === 'all') ? [...allArticles] : allArticles.filter(a => a.category === currentView);
         
         const term = document.getElementById('search-input').value.toLowerCase();
         if(term) list = list.filter(a => a.title.toLowerCase().includes(term) || a.source.toLowerCase().includes(term));
 
+        grid.innerHTML = '';
         list.sort((a,b) => b.time - a.time).forEach(a => {
             const isFav = favorites.some(f => f.id === a.id);
             const card = document.createElement('div');
@@ -229,14 +188,9 @@
         document.getElementById('saved-count').innerText = favorites.length;
     }
 
-    function getBriefingList() {
+    function getBriefing() {
         const cats = ['space', 'health', 'environment', 'tech'];
-        let list = [];
-        cats.forEach(c => {
-            const top = allArticles.find(a => a.category === c);
-            if(top) list.push(top);
-        });
-        return list;
+        return cats.map(c => allArticles.find(a => a.category === c)).filter(x => x);
     }
 
     function changeTab(tab, btn) {
@@ -250,15 +204,9 @@
         const art = allArticles.find(a => a.id === id) || favorites.find(f => f.id === id);
         if(!art) return;
         const idx = favorites.findIndex(f => f.id === id);
-        if(idx > -1) {
-            favorites.splice(idx, 1);
-            showToast("Removed from Saved");
-        } else {
-            favorites.push(art);
-            showToast("Saved to Pitch List");
-        }
+        if(idx > -1) favorites.splice(idx, 1); else favorites.push(art);
         localStorage.setItem('nurinsFavs', JSON.stringify(favorites));
-        render(); // This re-renders the current view so the star turns gold immediately
+        render();
     }
 
     function openArticle(a) {
@@ -269,27 +217,14 @@
         document.getElementById('modal-overlay').classList.add('open');
     }
 
-    function closeModal(e) { if(e.target.id === 'modal-overlay' || e.target.id === 'close-modal') document.getElementById('modal-overlay').classList.remove('open'); }
-    function handleSearch() { render(); }
-    function toggleAddFeed() { const c = document.getElementById('add-feed-container'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; }
+    function closeModal(e) { if(e.target.id === 'modal-overlay' || e.target.tagName === 'BUTTON') document.getElementById('modal-overlay').classList.remove('open'); }
     
-    function addCustomFeed() {
-        const n = document.getElementById('fn-in').value;
-        const u = document.getElementById('fu-in').value;
-        if(n && u) {
-            customFeeds.push({category: 'Custom', name: n, url: u});
-            localStorage.setItem('nurinsCustom', JSON.stringify(customFeeds));
-            location.reload();
-        }
-    }
-
     function copyPitch() {
         const t = favorites.map(f => `${f.title} (${f.source}) - ${f.link}`).join('\n\n');
         navigator.clipboard.writeText(t);
-        showToast("Pitch List Copied");
+        const toast = document.getElementById('toast'); toast.innerText = "Pitch List Copied"; toast.className = 'show';
+        setTimeout(() => toast.className = '', 2000);
     }
-
-    function showToast(m) { const t = document.getElementById("toast"); t.innerText = m; t.className = "show"; setTimeout(() => t.className = "", 3000); }
 
     init();
 </script>

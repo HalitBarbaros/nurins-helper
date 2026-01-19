@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurin's Little Helper</title>
+    <title>Nurin's Little Helper | Pro Dashboard</title>
     <style>
         :root {
             --bg-color: #0f0f13;
             --card-bg: #1e1e24;
             --text-main: #e0e0e0;
             --text-muted: #9ca3af;
-            --accent: #38bdf8;
-            --viral: #f43f5e;
-            --gold: #fbbf24;
-            --green: #10b981;
+            --accent: #38bdf8; /* Blue */
+            --viral: #f43f5e;   /* Pink */
+            --gold: #fbbf24;    /* Yellow */
+            --green: #10b981;   /* Green */
             --nav-active: #2563eb;
+            --fresh-glow: rgba(16, 185, 129, 0.4);
         }
 
         body {
@@ -27,7 +28,7 @@
 
         /* HEADER */
         header {
-            background: rgba(15, 15, 19, 0.95);
+            background: rgba(15, 15, 19, 0.98);
             padding: 15px 30px;
             border-bottom: 1px solid #333;
             position: sticky;
@@ -41,16 +42,58 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        h1 { margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; font-weight: 800; }
-        
+        .title-group h1 { margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; color: #fff; font-weight: 800; }
+        .title-group span { font-size: 0.8rem; color: #666; font-weight: normal; margin-left: 10px; }
+
+        .tools-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: flex-end;
+        }
+
+        /* SEARCH BAR */
+        #search-input {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            width: 250px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        #search-input:focus { border-color: var(--accent); width: 300px; }
+
+        /* TOGGLE BUTTONS */
+        .tool-btn {
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            color: var(--accent);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tool-btn:hover { background: #3f3f46; color: #fff; }
+
+        /* NAV BAR */
         .nav-bar {
             display: flex;
             gap: 8px;
             overflow-x: auto;
             padding-bottom: 5px;
             scrollbar-width: none;
+            margin-top: 10px;
         }
         .nav-bar::-webkit-scrollbar { display: none; }
 
@@ -66,59 +109,32 @@
             transition: all 0.2s;
             white-space: nowrap;
         }
-
         .nav-btn:hover { background: #3f3f46; color: #fff; }
-        
-        .nav-btn.active {
-            background: var(--nav-active);
-            color: #fff;
-            border-color: var(--nav-active);
-        }
-
+        .nav-btn.active { background: var(--nav-active); color: #fff; border-color: var(--nav-active); }
         .nav-btn.trending-tab.active { background: var(--viral); border-color: var(--viral); }
         .nav-btn.saved-tab.active { background: var(--gold); border-color: var(--gold); color: #000; }
-        
-        .refresh-btn {
-            background: transparent;
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 6px 12px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            transition: 0.2s;
-        }
-        .refresh-btn:hover { background: var(--accent); color: #000; }
 
-        /* TOAST NOTIFICATION */
+        /* TOAST */
         #toast {
             visibility: hidden;
-            min-width: 250px;
-            background-color: var(--accent); /* Blue for links */
+            min-width: 200px;
+            background-color: var(--accent);
             color: #000;
             text-align: center;
             border-radius: 4px;
-            padding: 16px;
+            padding: 12px;
             position: fixed;
             z-index: 1000;
             left: 50%;
             bottom: 30px;
             transform: translateX(-50%);
-            font-size: 0.9rem;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-        #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-
-        @-webkit-keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-
-        /* GRID */
+        /* GRID LAYOUT (Default) */
         #news-container { padding: 20px 30px; }
         
         #news-grid {
@@ -129,7 +145,7 @@
             margin: 0 auto;
         }
 
-        /* CARD DESIGN */
+        /* CARD DESIGN (Grid Mode) */
         .news-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -141,10 +157,16 @@
             border: 1px solid #2d2d35;
         }
         
+        /* FRESH NEWS GLOW (Only < 12 hours) */
+        .news-card.is-fresh {
+            border: 1px solid var(--green);
+            box-shadow: 0 0 10px var(--fresh-glow);
+        }
+
         .news-card:hover { 
             transform: translateY(-4px); 
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border-color: #444;
+            border-color: #555;
         }
 
         .card-image {
@@ -154,6 +176,21 @@
             background-position: center;
             position: relative;
         }
+
+        .fresh-badge {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Right side to not overlap category */
+            background: var(--green);
+            color: #000;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 20;
+        }
+        .is-fresh .fresh-badge { display: block; }
 
         .category-badge {
             position: absolute;
@@ -166,20 +203,19 @@
             border-radius: 6px;
             text-transform: uppercase;
             font-weight: 800;
-            letter-spacing: 0.5px;
         }
 
         /* ACTION BUTTONS */
         .action-group {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            bottom: 10px; /* Moved to bottom of image */
+            right: 10px;
             display: flex;
             gap: 5px;
         }
 
         .icon-btn {
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             border: none;
             color: #ccc;
             width: 32px;
@@ -192,15 +228,9 @@
             transition: all 0.2s;
             backdrop-filter: blur(4px);
         }
-        
-        .icon-btn:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); color: #fff; }
-        
-        /* Star Specific */
-        .star-btn { font-size: 1.1rem; }
-        .star-btn.is-saved { color: var(--gold); text-shadow: 0 0 8px rgba(251, 191, 36, 0.5); }
-        
-        /* Copy Specific */
-        .copy-btn:hover { color: var(--accent); background: #fff; }
+        .icon-btn:hover { background: #fff; color: #000; transform: scale(1.1); }
+        .star-btn.is-saved { color: var(--gold); text-shadow: 0 0 5px var(--gold); }
+        .star-btn.is-saved:hover { background: #fff; color: var(--gold); }
 
         .card-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; }
 
@@ -215,6 +245,7 @@
         }
 
         .date-display { color: #666; font-weight: normal; }
+        .is-fresh .date-display { color: var(--green); font-weight: bold; }
 
         .headline {
             font-size: 1rem;
@@ -223,7 +254,6 @@
             line-height: 1.4;
             color: #fff;
         }
-
         .headline a { text-decoration: none; color: inherit; }
         .headline a:hover { color: var(--accent); }
 
@@ -237,6 +267,44 @@
             overflow: hidden;
         }
 
+        /* --- LIST VIEW OVERRIDES --- */
+        .list-view #news-grid {
+            grid-template-columns: 1fr; /* Single column */
+            max-width: 1000px;
+        }
+
+        .list-view .news-card {
+            flex-direction: row;
+            height: 120px;
+            align-items: center;
+        }
+
+        .list-view .card-image {
+            width: 150px;
+            height: 100%;
+            flex-shrink: 0;
+        }
+        
+        .list-view .action-group {
+            top: 5px; right: 5px; bottom: auto;
+        }
+        .list-view .icon-btn { width: 24px; height: 24px; font-size: 0.8rem; }
+
+        .list-view .card-content {
+            padding: 10px 20px;
+            justify-content: center;
+        }
+        
+        .list-view .snippet {
+            display: -webkit-box;
+            -webkit-line-clamp: 1; /* Only 1 line of text in list mode */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 0.8rem;
+        }
+        
+        .list-view .headline { font-size: 1.1rem; margin-bottom: 5px; }
+
         #loading { text-align: center; padding: 60px; color: var(--text-muted); font-size: 1.1rem; }
     </style>
 </head>
@@ -244,8 +312,19 @@
 
 <header>
     <div class="header-top">
-        <h1>Nurin's Little Helper <span id="clock" style="font-size:0.8rem; color:#666; font-weight:normal; margin-left:15px"></span></h1>
-        <button class="refresh-btn" onclick="init()">↻ Sync Feeds</button>
+        <div class="title-group">
+            <h1>Nurin's Little Helper <span id="clock">Initializing...</span></h1>
+        </div>
+        
+        <div class="tools-group">
+            <input type="text" id="search-input" placeholder="Keyword Search (e.g., AI, Cancer)..." onkeyup="handleSearch()">
+            
+            <button class="tool-btn" onclick="toggleView()" title="Toggle List/Grid View">
+                <span id="view-icon">☰ List</span>
+            </button>
+            
+            <button class="tool-btn" onclick="init()" title="Refresh Feeds">↻</button>
+        </div>
     </div>
     
     <div class="nav-bar">
@@ -268,44 +347,42 @@
 <div id="toast">Link copied!</div>
 
 <script>
-    // --- MASSIVE SOURCE LIST ---
+    // --- ICONS (SVG) ---
+    const iconCopy = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    const iconSearch = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+
+    // --- SOURCES ---
     const feeds = [
-        // --- 🔥 TRENDING ---
+        // TRENDING
         { category: "trending", name: "ScienceAlert", url: "https://www.sciencealert.com/feed" },
         { category: "trending", name: "BBC Science", url: "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml" },
         { category: "trending", name: "NYT Science", url: "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml" },
         { category: "trending", name: "Scientific American", url: "http://rss.sciam.com/ScientificAmerican-Global" },
         { category: "trending", name: "Wired", url: "https://www.wired.com/feed/category/science/latest/rss" },
         { category: "trending", name: "Futurism", url: "https://futurism.com/feed" },
-
-        // --- 🚀 SPACE ---
+        // SPACE
         { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
-        { category: "space", name: "NASA Image Day", url: "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" },
+        { category: "space", name: "NASA Image", url: "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" },
         { category: "space", name: "ESA", url: "https://www.esa.int/content/search/rss/feed/topic/1585" },
         { category: "space", name: "Universe Today", url: "https://www.universetoday.com/feed/" },
         { category: "space", name: "EarthSky", url: "https://earthsky.org/feed" },
-
-        // --- 🏥 HEALTH ---
+        // HEALTH
         { category: "health", name: "Medical News Today", url: "https://rss.medicalnewstoday.com/featured.xml" },
         { category: "health", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
         { category: "health", name: "Stat News", url: "https://www.statnews.com/feed/" },
         { category: "health", name: "NIH Research", url: "https://www.nih.gov/news-events/feed.xml" },
         { category: "health", name: "Medical Xpress", url: "https://medicalxpress.com/rss-feed/" },
-
-        // --- 🌿 ENVIRONMENT ---
+        // ENV
         { category: "environment", name: "Treehugger", url: "https://www.treehugger.com/feeds/latest.xml" },
         { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
         { category: "environment", name: "EcoWatch", url: "https://www.ecowatch.com/feeds/feed.rss" },
-        { category: "environment", name: "ScienceDaily", url: "https://www.sciencedaily.com/rss/earth_climate.xml" },
         { category: "environment", name: "Carbon Brief", url: "https://www.carbonbrief.org/feed" },
-
-        // --- ⚛️ PHYSICS ---
+        // PHYSICS
         { category: "physics", name: "Quanta", url: "https://api.quantamagazine.org/feed/" },
         { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" },
         { category: "physics", name: "APS Physics", url: "https://physics.aps.org/feed.rss" },
         { category: "physics", name: "Symmetry", url: "https://www.symmetrymagazine.org/feed" },
-
-        // --- 💻 TECH ---
+        // TECH
         { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
         { category: "tech", name: "MIT Tech Review", url: "https://www.technologyreview.com/feed/" },
         { category: "tech", name: "The Verge", url: "https://www.theverge.com/rss/science/index.xml" },
@@ -313,30 +390,29 @@
     ];
 
     const DAYS_TO_SHOW = 7;
+    const FRESH_HOURS = 12; // Highlights news newer than 12 hours
+
     let allArticles = []; 
     let favorites = JSON.parse(localStorage.getItem('nurinsFavorites')) || [];
     let currentView = 'all'; 
+    let isListView = false; // State for List/Grid Toggle
 
     // Clock
     setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }, 1000);
 
-    // --- COPY LINK LOGIC ---
+    // --- ACTIONS ---
     function copyLink(link) {
-        navigator.clipboard.writeText(link).then(() => {
-            showToast();
-        });
+        navigator.clipboard.writeText(link).then(() => showToast("Link copied!"));
     }
 
-    function showToast() {
-        var x = document.getElementById("toast");
-        x.innerText = "Link copied to clipboard!";
-        x.className = "show";
-        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    function googleSearch(title) {
+        // Opens Google News search in new tab
+        const url = `https://news.google.com/search?q=${encodeURIComponent(title)}`;
+        window.open(url, '_blank');
     }
 
-    // --- FAVORITES LOGIC ---
     function toggleFavorite(link) {
         let article = allArticles.find(a => a.link === link);
         if (!article) article = favorites.find(a => a.link === link);
@@ -348,13 +424,54 @@
 
         localStorage.setItem('nurinsFavorites', JSON.stringify(favorites));
 
-        if (currentView === 'saved') { renderGrid(favorites); } 
-        else { renderGrid(getCurrentFilteredList()); }
+        if (currentView === 'saved') renderGrid(favorites);
+        else renderGrid(getFilteredAndSearchedList());
     }
 
-    function isSaved(link) { return favorites.some(f => f.link === link); }
+    function showToast(msg) {
+        var x = document.getElementById("toast");
+        x.innerText = msg;
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    }
 
-    // --- FETCH LOGIC ---
+    // --- VIEW TOGGLE ---
+    function toggleView() {
+        isListView = !isListView;
+        const container = document.getElementById('news-container');
+        const icon = document.getElementById('view-icon');
+        
+        if (isListView) {
+            container.classList.add('list-view');
+            icon.innerText = "▦ Grid";
+        } else {
+            container.classList.remove('list-view');
+            icon.innerText = "☰ List";
+        }
+    }
+
+    // --- SEARCH & FILTER ---
+    function handleSearch() {
+        // Trigger re-render with search term
+        if(currentView === 'saved') renderGrid(favorites);
+        else renderGrid(getFilteredAndSearchedList());
+    }
+
+    function getFilteredAndSearchedList() {
+        let list = (currentView === 'all') ? allArticles : allArticles.filter(a => a.category === currentView);
+        
+        // Search logic
+        const term = document.getElementById('search-input').value.toLowerCase();
+        if (term) {
+            list = list.filter(a => 
+                a.title.toLowerCase().includes(term) || 
+                a.desc.toLowerCase().includes(term)
+            );
+        }
+        return list;
+    }
+
+    // --- FETCH ENGINE ---
     async function fetchFeed(feed) {
         const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
         try {
@@ -362,7 +479,6 @@
             const str = await res.text();
             const data = new window.DOMParser().parseFromString(str, "text/xml");
             const items = Array.from(data.querySelectorAll("item, entry"));
-            
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - DAYS_TO_SHOW);
 
@@ -370,7 +486,6 @@
                 const pubDateNode = item.querySelector("pubDate, published");
                 if (!pubDateNode) return null;
                 const pubDate = new Date(pubDateNode.textContent);
-
                 if (pubDate < cutoffDate) return null;
 
                 let img = null;
@@ -397,14 +512,12 @@
                     img: img
                 };
             }).filter(item => item !== null);
-
         } catch (e) { return []; }
     }
 
     async function init() {
         const loading = document.getElementById('loading');
         loading.style.display = 'block';
-        loading.innerHTML = `Scanning global science wires...`;
         document.getElementById('news-grid').innerHTML = '';
 
         const promises = feeds.map(f => fetchFeed(f));
@@ -416,39 +529,57 @@
         renderGrid(allArticles);
     }
 
-    // --- RENDER LOGIC ---
+    // --- RENDER ---
     function renderGrid(articles) {
         const grid = document.getElementById('news-grid');
         grid.innerHTML = '';
+        const now = new Date();
+
+        // Re-apply search filter if we just switched tabs
+        const term = document.getElementById('search-input').value.toLowerCase();
+        if (term && currentView !== 'saved') { // If searching on saved tab, handled by logic above, otherwise refilter
+             // Actually getFilteredAndSearchedList handles this, but if we pass 'favorites' specifically:
+             if(currentView === 'saved') {
+                 articles = articles.filter(a => a.title.toLowerCase().includes(term));
+             }
+        }
 
         if (articles.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No articles found.</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No matches found.</div>`;
             return;
         }
 
         articles.forEach(news => {
             const card = document.createElement('div');
-            card.className = 'news-card';
+            
+            // Freshness Check
+            const hoursOld = (now - news.time) / (1000 * 60 * 60);
+            const isFresh = hoursOld < FRESH_HOURS;
+            
+            card.className = `news-card ${isFresh ? 'is-fresh' : ''}`;
             
             const imgHtml = news.img 
                 ? `background-image: url('${news.img}')`
                 : `background: linear-gradient(45deg, #1c1c1c, #2a2a2a); display:flex; align-items:center; justify-content:center; color:#444; content:'No Image'`;
 
-            const savedClass = isSaved(news.link) ? 'is-saved' : '';
+            const isFav = favorites.some(f => f.link === news.link);
             const dateStr = new Date(news.time).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             let badgeColor = getCatColor(news.category);
             if(news.category === 'trending') badgeColor = '#f43f5e';
 
-            // SVG ICON FOR COPY
-            const copyIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            // Sanitize title for search query
+            const safeTitle = news.title.replace(/'/g, "\\'");
 
             card.innerHTML = `
                 <div class="card-image" style="${imgHtml}">
-                    <div class="action-group">
-                        <button class="icon-btn copy-btn" onclick="copyLink('${news.link}')" title="Copy Link">${copyIcon}</button>
-                        <button class="icon-btn star-btn ${savedClass}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
-                    </div>
+                    <div class="fresh-badge">NEW</div>
                     <div class="category-badge" style="background:${badgeColor}">${news.category}</div>
+                    
+                    <div class="action-group">
+                        <button class="icon-btn" onclick="googleSearch('${safeTitle}')" title="Fact Check on Google News">${iconSearch}</button>
+                        <button class="icon-btn" onclick="copyLink('${news.link}')" title="Copy Link">${iconCopy}</button>
+                        <button class="icon-btn star-btn ${isFav ? 'is-saved' : ''}" onclick="toggleFavorite('${news.link}')" title="Save">★</button>
+                    </div>
                 </div>
                 <div class="card-content">
                     <div class="source-row">
@@ -467,20 +598,16 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         currentView = cat;
-        renderGrid(getCurrentFilteredList());
+        renderGrid(getFilteredAndSearchedList());
     }
 
     function showFavorites(btnElement) {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
         currentView = 'saved';
+        // Sort favorites by date
         const sortedFavs = [...favorites].sort((a,b) => new Date(b.time) - new Date(a.time));
         renderGrid(sortedFavs);
-    }
-
-    function getCurrentFilteredList() {
-        if (currentView === 'all') return allArticles; 
-        return allArticles.filter(a => a.category === currentView);
     }
 
     function getCatColor(cat) {

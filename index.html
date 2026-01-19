@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurin's Little Helper</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent: #00d4ff; 
+            --active-nav: #2563eb;
+        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; }
+        header { background: #000; padding: 20px 40px; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h1 { margin: 0; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase; color: #fff; }
+        .nav-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .nav-btn { background: #333; color: #aaa; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; white-space: nowrap; }
+        .nav-btn:hover { background: #444; color: #fff; }
+        .nav-btn.active { background: var(--active-nav); color: #fff; }
+        .refresh-btn { background-color: var(--accent); color: #000; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 4px; text-transform: uppercase; font-size: 0.75rem; }
+        #news-container { padding: 30px 40px; }
+        #news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; max-width: 1600px; margin: 0 auto; }
+        .news-card { background: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #333; display: flex; flex-direction: column; transition: transform 0.2s; }
+        .news-card:hover { transform: translateY(-2px); border-color: #555; }
+        .card-image { height: 180px; background-color: #2a2a2a; background-size: cover; background-position: center; position: relative; }
+        .category-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 3px 8px; font-size: 0.7rem; border-radius: 4px; text-transform: uppercase; font-weight: bold; }
+        .timestamp { position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.8); color: var(--accent); padding: 4px 8px; font-size: 0.75rem; font-family: monospace; }
+        .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .source-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; margin-bottom: 8px; text-transform: uppercase; }
+        .headline { font-size: 1.1rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.3; }
+        .headline a { text-decoration: none; color: #fff; }
+        .headline a:hover { color: var(--accent); }
+        .snippet { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        #loading { text-align: center; padding: 50px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-top">
+        <h1>Nurin's Little Helper <span id="clock" style="font-size:0.8rem; color:#666; font-weight:normal; margin-left:15px"></span></h1>
+        <button class="refresh-btn" onclick="init()">Force Refresh</button>
+    </div>
+    <div class="nav-bar">
+        <button class="nav-btn active" onclick="filterCategory('all', this)">ALL WIRES</button>
+        <button class="nav-btn" onclick="filterCategory('space', this)">SPACE</button>
+        <button class="nav-btn" onclick="filterCategory('health', this)">HEALTH</button>
+        <button class="nav-btn" onclick="filterCategory('environment', this)">ENVIRONMENT</button>
+        <button class="nav-btn" onclick="filterCategory('physics', this)">PHYSICS & MATH</button>
+        <button class="nav-btn" onclick="filterCategory('tech', this)">TECH</button>
+    </div>
+</header>
+<div id="news-container">
+    <div id="loading">Connecting to live feeds...</div>
+    <div id="news-grid"></div>
+</div>
+<script>
+    const feeds = [
+        { category: "space", name: "Space.com", url: "https://www.space.com/feeds/all" },
+        { category: "space", name: "NASA Breaking", url: "https://www.nasa.gov/rss/dyn/breaking_news.rss" },
+        { category: "health", name: "ScienceDaily (Health)", url: "https://www.sciencedaily.com/rss/health_medicine.xml" },
+        { category: "health", name: "Medical Xpress", url: "https://medicalxpress.com/rss-feed/" },
+        { category: "health", name: "NIH News", url: "https://www.nih.gov/news-events/feed.xml" },
+        { category: "environment", name: "ScienceDaily (Climate)", url: "https://www.sciencedaily.com/rss/earth_climate.xml" },
+        { category: "environment", name: "Mongabay", url: "https://news.mongabay.com/feed/" },
+        { category: "physics", name: "Phys.org", url: "https://phys.org/rss-feed/physics-news/" },
+        { category: "physics", name: "ScienceDaily (Math)", url: "https://www.sciencedaily.com/rss/computers_math/mathematics.xml" },
+        { category: "physics", name: "APS Physics", url: "https://physics.aps.org/feed.rss" },
+        { category: "tech", name: "TechCrunch", url: "https://techcrunch.com/feed/" },
+        { category: "tech", name: "MIT Tech Review", url: "https://www.technologyreview.com/feed/" },
+        { category: "tech", name: "The Verge (Science)", url: "https://www.theverge.com/rss/science/index.xml" }
+    ];
+    let allArticles = [];
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+    async function fetchFeed(feed) {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(feed.url)}&t=${Date.now()}`;
+        try {
+            const res = await fetch(proxyUrl);
+            const str = await res.text();
+            const data = new window.DOMParser().parseFromString(str, "text/xml");
+            const items = Array.from(data.querySelectorAll("item, entry"));
+            const today = new Date();
+            return items.map(item => {
+                const pubDateNode = item.querySelector("pubDate, published");
+                if (!pubDateNode) return null;
+                const pubDate = new Date(pubDateNode.textContent);
+                if (pubDate.getDate() !== today.getDate() || pubDate.getMonth() !== today.getMonth() || pubDate.getFullYear() !== today.getFullYear()) return null;
+                let img = null;
+                const media = item.querySelector("content, enclosure");
+                if (media && media.getAttribute("url")) img = media.getAttribute("url");
+                if (!img) {
+                    const descHtml = item.querySelector("description, summary, content")?.textContent || "";
+                    const div = document.createElement('div');
+                    div.innerHTML = descHtml;
+                    const foundImg = div.querySelector('img');
+                    if (foundImg && foundImg.width > 1) img = foundImg.src;
+                }
+                return { category: feed.category, source: feed.name, title: item.querySelector("title").textContent, link: item.querySelector("link").textContent || item.querySelector("link").getAttribute("href"), time: pubDate, desc: (item.querySelector("description, summary, content")?.textContent || "").replace(/<[^>]+>/g, '').substring(0, 120) + "...", img: img };
+            }).filter(item => item !== null);
+        } catch (e) { return []; }
+    }
+    async function init() {
+        const grid = document.getElementById('news-grid');
+        const loading = document.getElementById('loading');
+        grid.innerHTML = '';
+        loading.style.display = 'block';
+        loading.innerHTML = "Scanning all wires for today's news...";
+        const promises = feeds.map(f => fetchFeed(f));
+        const results = await Promise.all(promises);
+        allArticles = results.flat().sort((a, b) => b.time - a.time);
+        loading.style.display = 'none';
+        renderNews('all');
+    }
+    function renderNews(filterCat) {
+        const grid = document.getElementById('news-grid');
+        grid.innerHTML = '';
+        const filtered = filterCat === 'all' ? allArticles : allArticles.filter(a => a.category === filterCat);
+        if (filtered.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#666; margin-top:50px;">No news found for this category *yet* today.</div>`; return; }
+        filtered.forEach(news => {
+            const card = document.createElement('div');
+            card.className = 'news-card';
+            const imgHtml = news.img ? `background-image: url('${news.img}')` : `background: linear-gradient(45deg, #222, #333); display:flex; align-items:center; justify-content:center; color:#555; content:'No Image'`;
+            card.innerHTML = `<div class="card-image" style="${imgHtml}"><div class="category-badge" style="background:${getCatColor(news.category)}">${news.category}</div><div class="timestamp">${news.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div></div><div class="card-content"><div class="source-row"><span>${news.source}</span></div><div class="headline"><a href="${news.link}" target="_blank">${news.title}</a></div><div class="snippet">${news.desc}</div></div>`;
+            grid.appendChild(card);
+        });
+    }
+    function filterCategory(cat, btnElement) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); btnElement.classList.add('active'); renderNews(cat); }
+    function getCatColor(cat) { if(cat === 'space') return '#8b5cf6'; if(cat === 'health') return '#ef4444'; if(cat === 'environment') return '#10b981'; if(cat === 'physics') return '#f59e0b'; if(cat === 'tech') return '#3b82f6'; return '#666'; }
+    init();
+</script>
+</body>
+</html>
